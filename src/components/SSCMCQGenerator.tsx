@@ -539,9 +539,10 @@ Generate EXACTLY ${numQuestions} premium-quality ${difficultyLevel.toUpperCase()
 
     // Try up to 10 different API keys with proper rotation
     for (let attempt = 0; attempt < Math.min(10, totalKeys); attempt++) {
-      // Add delay before each attempt to give keys proper rest time
+      // Progressive backoff between retries
       if (attempt > 0) {
-        await new Promise(r => setTimeout(r, 1500)); // 1.5s between retries
+        const backoffMs = Math.min(1500 * Math.pow(1.5, attempt - 1), 10000);
+        await new Promise(r => setTimeout(r, backoffMs));
       }
       
       const keyData = getNextAvailableKey();
