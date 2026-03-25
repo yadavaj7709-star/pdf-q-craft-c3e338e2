@@ -641,14 +641,31 @@ Generate EXACTLY ${numQuestions} premium-quality ${difficultyLevel.toUpperCase()
     }
     
     if (pages.length === 0) {
-      // Fallback: split by character count
+      // Smart chunking: split at paragraph/section boundaries instead of arbitrary positions
       const chunkSize = 35000;
-      for (let i = 0; i < safeContent.length; i += chunkSize) {
-        const endIndex = Math.min(i + chunkSize, safeContent.length);
-        const chunk = safeContent.substring(i, endIndex);
+      let pos = 0;
+      while (pos < safeContent.length) {
+        let end = Math.min(pos + chunkSize, safeContent.length);
+        // Try to split at a paragraph boundary (double newline) within last 20% of chunk
+        if (end < safeContent.length) {
+          const searchStart = Math.max(pos + Math.floor(chunkSize * 0.8), pos);
+          const segment = safeContent.substring(searchStart, end);
+          const lastParagraph = segment.lastIndexOf('\n\n');
+          if (lastParagraph > 0) {
+            end = searchStart + lastParagraph;
+          } else {
+            // Fallback: split at sentence boundary
+            const lastSentence = segment.lastIndexOf('. ');
+            if (lastSentence > 0) {
+              end = searchStart + lastSentence + 2;
+            }
+          }
+        }
+        const chunk = safeContent.substring(pos, end);
         if (chunk && chunk.trim().length > 100) {
           pages.push(chunk);
         }
+        pos = end;
       }
     }
     
