@@ -944,29 +944,36 @@ Generate EXACTLY ${numQuestions} premium-quality ${difficultyLevel.toUpperCase()
         <div className="mb-6">
           <BulkApiKeyManager />
 
-          {/* API key help text (shown below the manager) */}
-          <div className="mt-4 rounded-xl border border-border bg-card p-4">
-            <p className="text-foreground font-bold text-lg mb-2">🚨 API Keys Required</p>
-            <p className="text-muted-foreground mb-3">
-              You need to add your own Google Gemini API keys to generate MCQs. The previous default keys were disabled by Google.
-            </p>
-            <div className="bg-muted/40 p-3 rounded-lg border border-border">
-              <p className="font-semibold text-foreground mb-2">How to get free API keys:</p>
-              <ol className="text-sm text-muted-foreground list-decimal list-inside space-y-1">
+          {/* API key help text */}
+          <div className="mt-4 rounded-2xl border border-primary/20 bg-gradient-to-br from-primary/5 to-accent/5 p-5 shadow-sm">
+            <div className="flex items-start gap-3 mb-3">
+              <span className="text-2xl">🔑</span>
+              <div>
+                <p className="text-foreground font-bold text-base">API Keys Required</p>
+                <p className="text-muted-foreground text-sm mt-0.5">
+                  Add your own Google Gemini API keys to generate MCQs.
+                </p>
+              </div>
+            </div>
+            <div className="bg-background/60 backdrop-blur-sm p-4 rounded-xl border border-border/50">
+              <p className="font-semibold text-foreground text-sm mb-2.5 flex items-center gap-1.5">
+                <span className="text-primary">✦</span> How to get free API keys:
+              </p>
+              <ol className="text-sm text-muted-foreground list-decimal list-inside space-y-1.5">
                 <li>
                   Go to{' '}
                   <a
                     href="https://aistudio.google.com/apikey"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-primary hover:underline font-medium"
+                    className="text-primary hover:underline font-semibold"
                   >
-                    Google AI Studio
+                    Google AI Studio ↗
                   </a>
                 </li>
                 <li>Sign in with your Google account</li>
-                <li>Click "Create API Key"</li>
-                <li>Copy the key and paste it in the API Key Manager above</li>
+                <li>Click <span className="font-medium text-foreground">"Create API Key"</span></li>
+                <li>Copy &amp; paste it in the API Key Manager above</li>
               </ol>
             </div>
           </div>
