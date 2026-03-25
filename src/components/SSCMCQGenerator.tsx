@@ -831,12 +831,13 @@ Generate EXACTLY ${numQuestions} premium-quality ${difficultyLevel.toUpperCase()
     if (!text || typeof text !== 'string') return [];
     
     const questions: MCQ[] = [];
-    const qBlocks = text.split(/(?=Q\d+\.)/i).filter(b => b && b.trim());
+    // Handle both "Q1." and "Q1)" and "1." formats
+    const qBlocks = text.split(/(?=(?:Q\d+[\.\)]|\b\d+[\.\)]\s+))/i).filter(b => b && b.trim());
     
     for (const block of qBlocks) {
       if (!block) continue;
       const lines = block.split('\n').map(l => (l || '').trim()).filter(Boolean);
-      if (lines.length < 6) continue;
+      if (lines.length < 5) continue;
       
       const mcq: MCQ = {
         question: '',
@@ -847,32 +848,36 @@ Generate EXACTLY ${numQuestions} premium-quality ${difficultyLevel.toUpperCase()
       };
       
       let inExplanation = false;
+      let explanationLines: string[] = [];
       
       for (const line of lines) {
         if (!line) continue;
         
-        // Parse question number and text
-        if (/^Q\d+\./.test(line)) {
-          mcq.question = line.replace(/^Q\d+\.\s*/, '') || '';
-        } 
-        // Parse options A, B, C, D (both formats: "A." and "a)")
-        else if (/^[A-Da-d][\.\)]/i.test(line) && mcq.options.length < 4) {
-          mcq.options.push(line);
-        } 
-        // Parse correct answer
-        else if (/^Correct Answer:/i.test(line)) {
-          const match = line.match(/\b[A-Da-d]\b/i);
-          mcq.correct = match ? match[0].toLowerCase() : '';
+        // Parse question number and text (Q1. / Q1) / 1. formats)
+        if (/^(?:Q?\d+[\.\)])\s+/i.test(line) && !mcq.question) {
+          mcq.question = line.replace(/^(?:Q?\d+[\.\)])\s*/i, '').trim();
           inExplanation = false;
         } 
-        // Parse explanation (both "Explanation:" and "Explanation (Testbook Style):")
+        // Parse options A-D (formats: "A." "A)" "(A)" "a." "a)")
+        else if (/^[\(\s]*[A-Da-d][\.\)\:](?:\s|$)/i.test(line) && mcq.options.length < 4 && !inExplanation) {
+          const cleaned = line.replace(/^[\(\s]*([A-Da-d])[\.\)\:]\s*/, '$1. ').trim();
+          mcq.options.push(cleaned);
+        } 
+        // Parse correct answer (multiple formats)
+        else if (/^(?:Correct\s*Answer|Answer|Ans)\s*[:\-]/i.test(line)) {
+          const match = line.match(/\b([A-Da-d])\b/i);
+          mcq.correct = match ? match[1].toLowerCase() : '';
+          inExplanation = false;
+        } 
+        // Parse explanation
         else if (/^Explanation/i.test(line)) {
-          mcq.explanation = line.replace(/^Explanation[^:]*:\s*/i, '') || '';
+          const expText = line.replace(/^Explanation[^:]*:\s*/i, '').trim();
+          if (expText) explanationLines.push(expText);
           inExplanation = true;
         } 
         // Continue explanation on next lines
         else if (inExplanation) {
-          mcq.explanation += ' ' + line;
+          explanationLines.push(line);
         } 
         // Continue question text if no options yet
         else if (mcq.question && mcq.options.length === 0) {
@@ -880,14 +885,25 @@ Generate EXACTLY ${numQuestions} premium-quality ${difficultyLevel.toUpperCase()
         }
       }
       
-      // Validate correct answer is a valid option (a-d)
+      mcq.explanation = explanationLines.join(' ').trim();
+      
+      // Validate correct answer
       if (mcq.correct && !['a', 'b', 'c', 'd'].includes(mcq.correct)) {
-        mcq.correct = 'a'; // Default to first option if invalid
+        // Try to extract from explanation if answer letter is mentioned
+        const expMatch = mcq.explanation.match(/correct\s+(?:answer|option)\s+is\s+[\(\s]*([A-Da-d])/i);
+        mcq.correct = expMatch ? expMatch[1].toLowerCase() : 'a';
       }
       
-      // Ensure question exists and is valid before adding
+      // Accept questions with valid structure
       if (mcq.question && mcq.question.trim().length > 10 && mcq.options.length === 4 && mcq.correct) {
         questions.push(mcq);
+      } else if (mcq.question && mcq.options.length === 4 && !mcq.correct && mcq.explanation) {
+        // Try to recover correct answer from explanation
+        const expMatch = mcq.explanation.match(/\b([A-Da-d])\b.*(?:is correct|correct answer)/i);
+        if (expMatch) {
+          mcq.correct = expMatch[1].toLowerCase();
+          questions.push(mcq);
+        }
       }
     }
     
