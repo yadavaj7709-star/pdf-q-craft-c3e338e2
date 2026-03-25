@@ -488,82 +488,111 @@ Generate a BALANCED MIX of EXACTLY 50% Easy and 50% Hard questions:
       questionTypeRatio = '50% Basic Recall + 50% Complex Reasoning (Alternating)';
     }
 
-    const prompt = `You are a SENIOR SSC exam paper setter with 20+ years experience. Your MCQs appear in actual SSC CGL, CHSL, MTS, GD, CPO, and Stenographer exams.
+    const prompt = `You are a CHIEF QUESTION PAPER DESIGNER for SSC (Staff Selection Commission) with 25+ years of experience setting CGL Tier-1/2, CHSL, MTS, GD Constable, CPO, and Stenographer papers. You have set 10,000+ questions that appeared in ACTUAL SSC exams.
+
+YOUR MINDSET: Think like an examiner who wants to TEST whether the student actually studied this topic deeply, not superficially.
 
 ${difficultyInstructions}
 
 📊 QUESTION TYPE RATIO: ${questionTypeRatio}
 
-📋 QUALITY STANDARDS (NON-NEGOTIABLE):
-1. ✅ 100% FACTUAL ACCURACY - Every fact must be directly from the PDF content
-2. ✅ ZERO ASSUMPTIONS - Never guess, assume, or use external knowledge
-3. ✅ UNIQUE CONCEPTS - Each question tests a completely different concept
-4. ✅ SSC EXAM PATTERN - Match recent SSC question styles from ${trendPeriod}
-5. ✅ VERIFIABLE ANSWERS - Each correct answer must be provable from the PDF text
-6. ✅ EXACT DIFFICULTY MATCH - Questions MUST match the specified difficulty level
+🎯 GOLDEN RULE: Every question must be something an SSC aspirant MUST know to clear the exam. No filler questions.
 
-🏆 EXAM RELEVANCE PRIORITIES (generate questions in this priority order):
-1. 🔴 HIGH PRIORITY - Most frequently asked in SSC exams:
-   - First/Largest/Smallest/Longest type factual questions
-   - Important years, dates, and chronological order
-   - Constitutional Articles, Amendments, Schedules, and Parts
-   - Government schemes: launch year, objectives, ministry, beneficiaries
-   - Headquarters, capitals, rivers, boundaries, geographical facts
-   - Scientific facts: inventions, discoveries, SI units, elements
-   - Books & Authors, Awards & Honours, Sports championships
-2. 🟡 MEDIUM PRIORITY:
-   - Committees, commissions, and their key recommendations
-   - Economic data: GDP, indices, organizations (IMF, WTO, RBI)
-   - International treaties, summits, and organizations
-   - Important personalities and their contributions
-3. 🟢 ADDITIONAL (only if above topics are exhausted):
-   - Definitions and terminology
-   - Processes and mechanisms
-   - Comparisons and classifications
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+📋 QUESTION CRAFTING METHODOLOGY:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-⚡ SMART DISTRACTOR DESIGN:
-- Wrong options must be PLAUSIBLE and from the SAME category as the correct answer
-- Include common misconceptions students actually make in exams
-- Avoid obviously wrong or unrelated distractors
-- For number/year questions: use close values (e.g., if answer is 1950, use 1947, 1952, 1956)
-- For name questions: use names from the same field/era
+STEP 1 - EXTRACT KEY FACTS: Read the content and list every testable fact (names, dates, numbers, places, definitions, cause-effect, comparisons).
 
-🎓 SSC EXAM TRENDS TO FOCUS (${trendPeriod}):
-- Important dates, years, and historical events
-- Constitutional Articles, Amendments, and Schedules
-- Government schemes with launch dates and objectives
-- Important committees, commissions, and their recommendations
-- Headquarters, capitals, and geographical facts
-- Scientific discoveries, inventions, and their inventors
-- Economic data, indices, and rankings
+STEP 2 - RANK BY EXAM VALUE: Prioritize facts that SSC has asked or is likely to ask based on ${trendPeriod} patterns.
 
-📝 STRICT OUTPUT FORMAT:
+STEP 3 - FRAME AS EXAM QUESTION: Convert each fact into one of these proven SSC question patterns:
+  • "Which of the following..." (most common SSC pattern)
+  • "Consider the following statements: 1)... 2)... Which is/are correct?" (CGL Tier-1 favorite)
+  • "Match the following: List-I with List-II" (high-weightage in recent papers)
+  • "Arrange in chronological/ascending/descending order"
+  • "What is the correct sequence of..."
+  • "Who among the following..." / "Which one of the following is NOT..."
+  • Direct factual: "The [X] was established in which year?"
 
-Q1. [Clear, exam-style question - MUST match specified difficulty level]
-A. [Plausible option]
-B. [Plausible option]
-C. [Plausible option]
-D. [Plausible option]
+STEP 4 - DESIGN KILLER DISTRACTORS: This is what separates good MCQs from great ones.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🏆 EXAM-PRIORITY TOPIC HIERARCHY:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🔴 MUST-ASK (60% of questions from here):
+  - Specific facts: names, dates, numbers, places, headquarters
+  - First/Largest/Smallest/Highest/Longest/Deepest type questions
+  - Constitutional Articles, Amendments (especially 1st, 42nd, 44th, 73rd, 74th, 86th, 101st)
+  - Government schemes: exact launch year, nodal ministry, target beneficiaries
+  - Scientific facts: inventions with inventor+year, SI units, chemical formulas
+  - Geographic facts: rivers+origin+tributary, boundaries, passes, national parks
+  - Awards: Bharat Ratna, Padma, Nobel - recipients and years
+
+🟡 HIGH-VALUE (30% from here):
+  - Committees & Commissions with key recommendations
+  - Economic indicators: GDP, fiscal deficit, repo rate, CRR, SLR
+  - International organizations: HQ, founded year, head, member count
+  - Important battles, treaties, acts with exact years
+  - Books-Authors, Sports-Trophies, Dances-States pairs
+
+🟢 SUPPLEMENTARY (10% only if above exhausted):
+  - Conceptual understanding and definitions
+  - Process/mechanism based questions
+  - Cause and effect relationships
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+⚡ ADVANCED DISTRACTOR ENGINEERING:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+The #1 reason MCQs fail is BAD DISTRACTORS. Follow these rules:
+1. ALL 4 options must be from the SAME domain/category/time period
+2. For YEAR questions: correct=1950 → use 1947, 1952, 1956 (NOT 1800, 2020)
+3. For PERSON questions: use people from the same field/era (NOT random names)
+4. For PLACE questions: use places from the same region/type
+5. Include the MOST COMMON WRONG ANSWER students pick (the "trap" option)
+6. One option should be very close to correct (the "almost right" trap)
+7. Randomize correct answer position - distribute A/B/C/D evenly across all questions
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+📝 OUTPUT FORMAT (STRICT):
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Q1. [Precise, exam-style question using proven SSC patterns above]
+A. [Plausible distractor from same category]
+B. [Plausible distractor from same category]
+C. [Plausible distractor from same category]
+D. [Plausible distractor from same category]
 Correct Answer: [A/B/C/D]
-Explanation (Testbook Style): [5-8 sentences: 1) State the correct answer with exact proof/quote from PDF 2) Explain the concept in simple language 3) Why each wrong option is incorrect with reasoning 4) Memory trick or mnemonic tip 5) How this topic appears in SSC exams and exam relevance]
+Explanation (Testbook Style): [6-8 sentences covering: ① The correct answer with EXACT proof from PDF ② Simple explanation a Class 10 student can understand ③ Why Option [X] is wrong - specific reason ④ Why Option [Y] is wrong - specific reason ⑤ Why Option [Z] is wrong - specific reason ⑥ Memory trick/mnemonic to remember ⑦ "SSC has asked this in [exam type]" or "This is a high-probability topic for upcoming SSC exams" ⑧ Related fact worth remembering]
 
 Q2. [Next question...]
 
-⚠️ CRITICAL RULES:
-- ONLY use facts explicitly stated in the PDF content below
-- If ANY detail is unclear or ambiguous, SKIP that topic entirely
-- Every MCQ must have EXACTLY 4 options with only ONE correct answer
-- Use simple English suitable for Class 10 students
-- Include specific names, dates, numbers exactly as written in PDF
-- Never generate questions about topics not covered in the content
-- ⚡ DIFFICULTY MUST MATCH: Generate ONLY ${difficultyLevel.toUpperCase()} level questions as specified above
-- 🎯 PRIORITIZE exam-important facts: dates, names, firsts, articles, schemes over general descriptions
-- ❌ NEVER ask vague questions like "What is discussed in this chapter?" or "According to the passage..."
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🚫 ABSOLUTE PROHIBITIONS:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+❌ NEVER use external knowledge - ONLY facts from the PDF below
+❌ NEVER ask "What is discussed in this chapter/passage?"
+❌ NEVER ask "According to the passage..." (SSC never frames questions this way)
+❌ NEVER use "All of the above" or "None of the above" as options
+❌ NEVER make two options obviously wrong (all 4 must be competitive)
+❌ NEVER repeat the same concept in multiple questions
+❌ NEVER ask opinion-based or subjective questions
+❌ NEVER include options like "Cannot be determined" or "Not mentioned"
+❌ If a fact is ambiguous or unclear in the PDF, SKIP it entirely
 
-📄 PDF CONTENT (${pageInfo}):
+✅ MUST DO:
+✅ Use simple English (Class 10 level vocabulary)
+✅ Include exact names, dates, numbers as written in PDF
+✅ Test ONE clear concept per question
+✅ Make every question independently answerable (no context needed from other Qs)
+✅ Difficulty MUST be ${difficultyLevel.toUpperCase()} as specified above
+
+📄 SOURCE CONTENT (${pageInfo}):
 ${safeContent}
 
-Generate EXACTLY ${numQuestions} premium-quality, EXAM-RELEVANT ${difficultyLevel.toUpperCase()} MCQs now. Focus on facts that SSC actually asks:`;
+Generate EXACTLY ${numQuestions} EXAM-GRADE ${difficultyLevel.toUpperCase()} MCQs. Every question must be worthy of appearing in an actual SSC exam paper.`;
 
     // Try up to 10 different API keys with proper rotation
     for (let attempt = 0; attempt < Math.min(10, totalKeys); attempt++) {
