@@ -488,7 +488,7 @@ Generate a BALANCED MIX of EXACTLY 50% Easy and 50% Hard questions:
       questionTypeRatio = '50% Basic Recall + 50% Complex Reasoning (Alternating)';
     }
 
-    const prompt = `You are a SENIOR SSC exam paper setter with 20+ years experience. Your MCQs are used in actual SSC exams.
+    const prompt = `You are a SENIOR SSC exam paper setter with 20+ years experience. Your MCQs appear in actual SSC CGL, CHSL, MTS, GD, CPO, and Stenographer exams.
 
 ${difficultyInstructions}
 
@@ -501,6 +501,32 @@ ${difficultyInstructions}
 4. ✅ SSC EXAM PATTERN - Match recent SSC question styles from ${trendPeriod}
 5. ✅ VERIFIABLE ANSWERS - Each correct answer must be provable from the PDF text
 6. ✅ EXACT DIFFICULTY MATCH - Questions MUST match the specified difficulty level
+
+🏆 EXAM RELEVANCE PRIORITIES (generate questions in this priority order):
+1. 🔴 HIGH PRIORITY - Most frequently asked in SSC exams:
+   - First/Largest/Smallest/Longest type factual questions
+   - Important years, dates, and chronological order
+   - Constitutional Articles, Amendments, Schedules, and Parts
+   - Government schemes: launch year, objectives, ministry, beneficiaries
+   - Headquarters, capitals, rivers, boundaries, geographical facts
+   - Scientific facts: inventions, discoveries, SI units, elements
+   - Books & Authors, Awards & Honours, Sports championships
+2. 🟡 MEDIUM PRIORITY:
+   - Committees, commissions, and their key recommendations
+   - Economic data: GDP, indices, organizations (IMF, WTO, RBI)
+   - International treaties, summits, and organizations
+   - Important personalities and their contributions
+3. 🟢 ADDITIONAL (only if above topics are exhausted):
+   - Definitions and terminology
+   - Processes and mechanisms
+   - Comparisons and classifications
+
+⚡ SMART DISTRACTOR DESIGN:
+- Wrong options must be PLAUSIBLE and from the SAME category as the correct answer
+- Include common misconceptions students actually make in exams
+- Avoid obviously wrong or unrelated distractors
+- For number/year questions: use close values (e.g., if answer is 1950, use 1947, 1952, 1956)
+- For name questions: use names from the same field/era
 
 🎓 SSC EXAM TRENDS TO FOCUS (${trendPeriod}):
 - Important dates, years, and historical events
@@ -519,7 +545,7 @@ B. [Plausible option]
 C. [Plausible option]
 D. [Plausible option]
 Correct Answer: [A/B/C/D]
-Explanation (Testbook Style): [5-8 sentences: 1) State the correct answer with proof from PDF 2) Explain the concept simply 3) Why each wrong option is incorrect 4) Memory tip or exam relevance 5) Related facts from the PDF]
+Explanation (Testbook Style): [5-8 sentences: 1) State the correct answer with exact proof/quote from PDF 2) Explain the concept in simple language 3) Why each wrong option is incorrect with reasoning 4) Memory trick or mnemonic tip 5) How this topic appears in SSC exams and exam relevance]
 
 Q2. [Next question...]
 
@@ -531,11 +557,13 @@ Q2. [Next question...]
 - Include specific names, dates, numbers exactly as written in PDF
 - Never generate questions about topics not covered in the content
 - ⚡ DIFFICULTY MUST MATCH: Generate ONLY ${difficultyLevel.toUpperCase()} level questions as specified above
+- 🎯 PRIORITIZE exam-important facts: dates, names, firsts, articles, schemes over general descriptions
+- ❌ NEVER ask vague questions like "What is discussed in this chapter?" or "According to the passage..."
 
 📄 PDF CONTENT (${pageInfo}):
 ${safeContent}
 
-Generate EXACTLY ${numQuestions} premium-quality ${difficultyLevel.toUpperCase()} MCQs now:`;
+Generate EXACTLY ${numQuestions} premium-quality, EXAM-RELEVANT ${difficultyLevel.toUpperCase()} MCQs now. Focus on facts that SSC actually asks:`;
 
     // Try up to 10 different API keys with proper rotation
     for (let attempt = 0; attempt < Math.min(10, totalKeys); attempt++) {
