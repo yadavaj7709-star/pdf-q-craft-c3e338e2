@@ -488,111 +488,130 @@ Generate a BALANCED MIX of EXACTLY 50% Easy and 50% Hard questions:
       questionTypeRatio = '50% Basic Recall + 50% Complex Reasoning (Alternating)';
     }
 
-    const prompt = `You are a CHIEF QUESTION PAPER DESIGNER for SSC (Staff Selection Commission) with 25+ years of experience setting CGL Tier-1/2, CHSL, MTS, GD Constable, CPO, and Stenographer papers. You have set 10,000+ questions that appeared in ACTUAL SSC exams.
+     const prompt = `You are a CHIEF QUESTION PAPER DESIGNER for SSC (Staff Selection Commission) with 25+ years of experience setting CGL Tier-1/2, CHSL, MTS, GD Constable, CPO, and Stenographer papers.
 
-YOUR MINDSET: Think like an examiner who wants to TEST whether the student actually studied this topic deeply, not superficially.
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🛑 ZERO HALLUCINATION PROTOCOL (HIGHEST PRIORITY):
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+BEFORE generating ANY question, you MUST follow this verification:
+
+1. QUOTE CHECK: For every fact you use in a question, mentally quote the EXACT sentence from the PDF where it appears. If you cannot find the exact sentence → DO NOT create that question.
+
+2. ANSWER VERIFICATION: The correct answer MUST be explicitly stated in the PDF content below. If the PDF says "established in 1950" then the answer is 1950 — do NOT change, round, or approximate.
+
+3. OPTION VERIFICATION: Every distractor (wrong option) must be a REAL entity from the SAME domain. Do NOT invent names, dates, places, or numbers that don't exist.
+
+4. CROSS-CHECK: After drafting each question, re-read the PDF content and verify:
+   ✓ Is the question's premise factually stated in the PDF? 
+   ✓ Is the correct answer exactly matching the PDF?
+   ✓ Are all 4 options real, verifiable entities?
+   ✓ Could any other option also be considered correct based on PDF? If yes → DISCARD the question.
+
+5. AMBIGUITY RULE: If a fact in the PDF is unclear, incomplete, or could be interpreted multiple ways → SKIP IT. Generate fewer questions rather than inaccurate ones.
+
+6. NO INFERENCE RULE: Do NOT draw conclusions, make logical deductions, or combine facts from different parts of the PDF to create questions. Each question must test ONE explicitly stated fact.
 
 ${difficultyInstructions}
 
 📊 QUESTION TYPE RATIO: ${questionTypeRatio}
 
-🎯 GOLDEN RULE: Every question must be something an SSC aspirant MUST know to clear the exam. No filler questions.
+🎯 GOLDEN RULE: Every question must be something an SSC aspirant MUST know. Generate ONLY from facts EXPLICITLY written in the PDF. Zero guessing. Zero assumptions.
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 📋 QUESTION CRAFTING METHODOLOGY:
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-STEP 1 - EXTRACT KEY FACTS: Read the content and list every testable fact (names, dates, numbers, places, definitions, cause-effect, comparisons).
+STEP 1 - EXTRACT & VERIFY FACTS: Read the content. List ONLY facts that are clearly and unambiguously stated with specific data (names, dates, numbers, places, definitions).
 
-STEP 2 - RANK BY EXAM VALUE: Prioritize facts that SSC has asked or is likely to ask based on ${trendPeriod} patterns.
+STEP 2 - RANK BY EXAM VALUE: Prioritize facts SSC has asked or is likely to ask based on ${trendPeriod} patterns.
 
-STEP 3 - FRAME AS EXAM QUESTION: Convert each fact into one of these proven SSC question patterns:
+STEP 3 - FRAME AS EXAM QUESTION using proven SSC patterns:
   • "Which of the following..." (most common SSC pattern)
   • "Consider the following statements: 1)... 2)... Which is/are correct?" (CGL Tier-1 favorite)
   • "Match the following: List-I with List-II" (high-weightage in recent papers)
   • "Arrange in chronological/ascending/descending order"
-  • "What is the correct sequence of..."
   • "Who among the following..." / "Which one of the following is NOT..."
   • Direct factual: "The [X] was established in which year?"
 
-STEP 4 - DESIGN KILLER DISTRACTORS: This is what separates good MCQs from great ones.
+STEP 4 - DESIGN KILLER DISTRACTORS with REAL entities only.
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 🏆 EXAM-PRIORITY TOPIC HIERARCHY:
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-🔴 MUST-ASK (60% of questions from here):
+🔴 MUST-ASK (60% of questions):
   - Specific facts: names, dates, numbers, places, headquarters
-  - First/Largest/Smallest/Highest/Longest/Deepest type questions
-  - Constitutional Articles, Amendments (especially 1st, 42nd, 44th, 73rd, 74th, 86th, 101st)
-  - Government schemes: exact launch year, nodal ministry, target beneficiaries
-  - Scientific facts: inventions with inventor+year, SI units, chemical formulas
-  - Geographic facts: rivers+origin+tributary, boundaries, passes, national parks
-  - Awards: Bharat Ratna, Padma, Nobel - recipients and years
+  - First/Largest/Smallest/Highest/Longest type questions
+  - Constitutional Articles, Amendments
+  - Government schemes: exact launch year, nodal ministry, beneficiaries
+  - Scientific facts: inventions with inventor+year, SI units, formulas
+  - Geographic facts: rivers+origin, boundaries, passes, national parks
 
-🟡 HIGH-VALUE (30% from here):
+🟡 HIGH-VALUE (30%):
   - Committees & Commissions with key recommendations
-  - Economic indicators: GDP, fiscal deficit, repo rate, CRR, SLR
-  - International organizations: HQ, founded year, head, member count
+  - Economic indicators, International organizations
   - Important battles, treaties, acts with exact years
   - Books-Authors, Sports-Trophies, Dances-States pairs
 
 🟢 SUPPLEMENTARY (10% only if above exhausted):
   - Conceptual understanding and definitions
   - Process/mechanism based questions
-  - Cause and effect relationships
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-⚡ ADVANCED DISTRACTOR ENGINEERING:
+⚡ DISTRACTOR ENGINEERING:
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-The #1 reason MCQs fail is BAD DISTRACTORS. Follow these rules:
 1. ALL 4 options must be from the SAME domain/category/time period
-2. For YEAR questions: correct=1950 → use 1947, 1952, 1956 (NOT 1800, 2020)
-3. For PERSON questions: use people from the same field/era (NOT random names)
+2. For YEAR questions: correct=1950 → use 1947, 1952, 1956 (NOT random years)
+3. For PERSON questions: use people from the same field/era
 4. For PLACE questions: use places from the same region/type
-5. Include the MOST COMMON WRONG ANSWER students pick (the "trap" option)
-6. One option should be very close to correct (the "almost right" trap)
-7. Randomize correct answer position - distribute A/B/C/D evenly across all questions
+5. Include the MOST COMMON WRONG ANSWER (the "trap" option)
+6. Randomize correct answer position - distribute A/B/C/D evenly
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 📝 OUTPUT FORMAT (STRICT):
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-Q1. [Precise, exam-style question using proven SSC patterns above]
+Q1. [Precise, exam-style question]
 A. [Plausible distractor from same category]
 B. [Plausible distractor from same category]
 C. [Plausible distractor from same category]
 D. [Plausible distractor from same category]
 Correct Answer: [A/B/C/D]
-Explanation (Testbook Style): [6-8 sentences covering: ① The correct answer with EXACT proof from PDF ② Simple explanation a Class 10 student can understand ③ Why Option [X] is wrong - specific reason ④ Why Option [Y] is wrong - specific reason ⑤ Why Option [Z] is wrong - specific reason ⑥ Memory trick/mnemonic to remember ⑦ "SSC has asked this in [exam type]" or "This is a high-probability topic for upcoming SSC exams" ⑧ Related fact worth remembering]
+Explanation (Testbook Style): [6-8 sentences: ① Correct answer with EXACT quote/proof from PDF ② Simple explanation ③ Why Option X is wrong ④ Why Option Y is wrong ⑤ Why Option Z is wrong ⑥ Memory trick/mnemonic ⑦ SSC exam relevance note ⑧ Related fact worth remembering]
 
 Q2. [Next question...]
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 🚫 ABSOLUTE PROHIBITIONS:
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-❌ NEVER use external knowledge - ONLY facts from the PDF below
+❌ NEVER fabricate, assume, or hallucinate any fact not explicitly in the PDF
+❌ NEVER use your training knowledge to fill gaps — ONLY use what the PDF states
+❌ NEVER create a question if you are less than 100% certain the answer is in the PDF
 ❌ NEVER ask "What is discussed in this chapter/passage?"
-❌ NEVER ask "According to the passage..." (SSC never frames questions this way)
-❌ NEVER use "All of the above" or "None of the above" as options
-❌ NEVER make two options obviously wrong (all 4 must be competitive)
+❌ NEVER ask "According to the passage..." (SSC never frames this way)
+❌ NEVER use "All of the above" or "None of the above"
+❌ NEVER make two options obviously wrong
 ❌ NEVER repeat the same concept in multiple questions
 ❌ NEVER ask opinion-based or subjective questions
-❌ NEVER include options like "Cannot be determined" or "Not mentioned"
-❌ If a fact is ambiguous or unclear in the PDF, SKIP it entirely
+❌ NEVER include "Cannot be determined" or "Not mentioned"
+❌ If a fact is ambiguous or unclear → SKIP IT entirely
+❌ If you're unsure about a date/name/number → DO NOT include it
 
 ✅ MUST DO:
+✅ Every correct answer must have a direct, traceable source in the PDF text
 ✅ Use simple English (Class 10 level vocabulary)
-✅ Include exact names, dates, numbers as written in PDF
+✅ Include exact names, dates, numbers AS WRITTEN in PDF (no paraphrasing facts)
 ✅ Test ONE clear concept per question
-✅ Make every question independently answerable (no context needed from other Qs)
+✅ Make every question independently answerable
 ✅ Difficulty MUST be ${difficultyLevel.toUpperCase()} as specified above
+✅ If you can only create fewer accurate questions than requested, that is BETTER than creating inaccurate ones
 
 📄 SOURCE CONTENT (${pageInfo}):
 ${safeContent}
 
-Generate EXACTLY ${numQuestions} EXAM-GRADE ${difficultyLevel.toUpperCase()} MCQs. Every question must be worthy of appearing in an actual SSC exam paper.`;
+Generate EXACTLY ${numQuestions} EXAM-GRADE ${difficultyLevel.toUpperCase()} MCQs. ONLY use facts explicitly present in the content above. If the content doesn't support ${numQuestions} accurate questions, generate as many as you can with 100% accuracy — accuracy is MORE important than quantity.`;
 
     // Try up to 10 different API keys with proper rotation
     for (let attempt = 0; attempt < Math.min(10, totalKeys); attempt++) {
