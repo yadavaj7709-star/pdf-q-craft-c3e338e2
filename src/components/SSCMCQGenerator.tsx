@@ -515,7 +515,7 @@ ${difficultyInstructions}
 
 Your questions must match the EXACT style, difficulty, and language of questions asked in recent SSC exams. Study these REAL SSC question patterns and replicate them precisely:
 
-📌 REAL SSC CGL 2024 PATTERN EXAMPLES:
+📌 REAL SSC CGL ${prevYear}-${currentYear} PATTERN EXAMPLES:
 • "The Palk Strait separates India from which country?" → Direct, one-fact, no ambiguity
 • "Who was the first Governor-General of independent India?" → Tests specific 'first/last' facts
 • "Article 370 of the Indian Constitution was related to which state?" → Constitutional article + specific link
@@ -523,13 +523,13 @@ Your questions must match the EXACT style, difficulty, and language of questions
 • "Arrange the following events in chronological order: I. Battle of Plassey II. Battle of Buxar III. Battle of Panipat" → Sequencing with close-era events
 • "Consider the following statements about the President of India: 1) Must be 35+ years 2) Must be a member of Lok Sabha. Which is/are correct?" → Statement verification with traps
 
-📌 REAL SSC CHSL 2024 PATTERN:
+📌 REAL SSC CHSL ${prevYear}-${currentYear} PATTERN:
 • "Which river is known as 'Sorrow of Bihar'?" → Nickname/alias questions
 • "Brass is an alloy of which metals?" → Composition/constituent questions
 • "Who authored the book 'Discovery of India'?" → Direct author-book pairs
 • "Which vitamin deficiency causes Night Blindness?" → Cause-effect medical/science facts
 
-📌 REAL SSC MTS/GD 2024 PATTERN:
+📌 REAL SSC MTS/GD ${prevYear}-${currentYear} PATTERN:
 • "The headquarters of UNESCO is located in?" → HQ location questions
 • "Mahatma Gandhi started the Dandi March in which year?" → Event + exact year
 • "Which state has the longest coastline in India?" → Superlative geographic facts
