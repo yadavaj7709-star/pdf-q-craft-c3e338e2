@@ -488,7 +488,7 @@ Generate a BALANCED MIX of EXACTLY 50% Easy and 50% Hard questions:
       questionTypeRatio = '50% Basic Recall + 50% Complex Reasoning (Alternating)';
     }
 
-     const prompt = `You are a CHIEF QUESTION PAPER DESIGNER for SSC (Staff Selection Commission) with 25+ years of experience setting CGL Tier-1/2, CHSL, MTS, GD Constable, CPO, and Stenographer papers.
+     const prompt = `You are the ACTUAL SSC EXAM PAPER SETTER who has designed questions for CGL 2023, CGL 2024, CHSL 2024, MTS 2024, GD 2024, CPO 2024, and Stenographer 2024 papers. Your job is to produce questions INDISTINGUISHABLE from real SSC papers.
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 🛑 ZERO HALLUCINATION PROTOCOL (HIGHEST PRIORITY):
@@ -496,122 +496,151 @@ Generate a BALANCED MIX of EXACTLY 50% Easy and 50% Hard questions:
 
 BEFORE generating ANY question, you MUST follow this verification:
 
-1. QUOTE CHECK: For every fact you use in a question, mentally quote the EXACT sentence from the PDF where it appears. If you cannot find the exact sentence → DO NOT create that question.
-
-2. ANSWER VERIFICATION: The correct answer MUST be explicitly stated in the PDF content below. If the PDF says "established in 1950" then the answer is 1950 — do NOT change, round, or approximate.
-
-3. OPTION VERIFICATION: Every distractor (wrong option) must be a REAL entity from the SAME domain. Do NOT invent names, dates, places, or numbers that don't exist.
-
-4. CROSS-CHECK: After drafting each question, re-read the PDF content and verify:
-   ✓ Is the question's premise factually stated in the PDF? 
-   ✓ Is the correct answer exactly matching the PDF?
-   ✓ Are all 4 options real, verifiable entities?
-   ✓ Could any other option also be considered correct based on PDF? If yes → DISCARD the question.
-
-5. AMBIGUITY RULE: If a fact in the PDF is unclear, incomplete, or could be interpreted multiple ways → SKIP IT. Generate fewer questions rather than inaccurate ones.
-
-6. NO INFERENCE RULE: Do NOT draw conclusions, make logical deductions, or combine facts from different parts of the PDF to create questions. Each question must test ONE explicitly stated fact.
+1. QUOTE CHECK: For every fact you use, mentally quote the EXACT sentence from the PDF. If you cannot find it → DO NOT create that question.
+2. ANSWER VERIFICATION: The correct answer MUST be explicitly stated in the PDF. No changes, rounding, or approximation.
+3. OPTION VERIFICATION: Every distractor must be a REAL entity from the SAME domain. Do NOT invent anything.
+4. CROSS-CHECK: Re-read the PDF and verify premise, answer, all options, and uniqueness of correct answer.
+5. AMBIGUITY RULE: If unclear or interpretable multiple ways → SKIP IT.
+6. NO INFERENCE RULE: Do NOT combine facts or draw conclusions. Each question tests ONE explicitly stated fact.
 
 ${difficultyInstructions}
 
 📊 QUESTION TYPE RATIO: ${questionTypeRatio}
 
-🎯 GOLDEN RULE: Every question must be something an SSC aspirant MUST know. Generate ONLY from facts EXPLICITLY written in the PDF. Zero guessing. Zero assumptions.
-
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-📋 QUESTION CRAFTING METHODOLOGY:
+🎯 REPLICATE EXACT SSC EXAM STANDARD (${trendPeriod}):
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-STEP 1 - EXTRACT & VERIFY FACTS: Read the content. List ONLY facts that are clearly and unambiguously stated with specific data (names, dates, numbers, places, definitions).
+Your questions must match the EXACT style, difficulty, and language of questions asked in recent SSC exams. Study these REAL SSC question patterns and replicate them precisely:
 
-STEP 2 - RANK BY EXAM VALUE: Prioritize facts SSC has asked or is likely to ask based on ${trendPeriod} patterns.
+📌 REAL SSC CGL 2024 PATTERN EXAMPLES:
+• "The Palk Strait separates India from which country?" → Direct, one-fact, no ambiguity
+• "Who was the first Governor-General of independent India?" → Tests specific 'first/last' facts
+• "Article 370 of the Indian Constitution was related to which state?" → Constitutional article + specific link
+• "Which Five Year Plan adopted the objective of 'Removal of Poverty'?" → Scheme/Plan + exact detail
+• "Arrange the following events in chronological order: I. Battle of Plassey II. Battle of Buxar III. Battle of Panipat" → Sequencing with close-era events
+• "Consider the following statements about the President of India: 1) Must be 35+ years 2) Must be a member of Lok Sabha. Which is/are correct?" → Statement verification with traps
 
-STEP 3 - FRAME AS EXAM QUESTION using proven SSC patterns:
-  • "Which of the following..." (most common SSC pattern)
-  • "Consider the following statements: 1)... 2)... Which is/are correct?" (CGL Tier-1 favorite)
-  • "Match the following: List-I with List-II" (high-weightage in recent papers)
-  • "Arrange in chronological/ascending/descending order"
-  • "Who among the following..." / "Which one of the following is NOT..."
-  • Direct factual: "The [X] was established in which year?"
+📌 REAL SSC CHSL 2024 PATTERN:
+• "Which river is known as 'Sorrow of Bihar'?" → Nickname/alias questions
+• "Brass is an alloy of which metals?" → Composition/constituent questions
+• "Who authored the book 'Discovery of India'?" → Direct author-book pairs
+• "Which vitamin deficiency causes Night Blindness?" → Cause-effect medical/science facts
 
-STEP 4 - DESIGN KILLER DISTRACTORS with REAL entities only.
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-🏆 EXAM-PRIORITY TOPIC HIERARCHY:
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-🔴 MUST-ASK (60% of questions):
-  - Specific facts: names, dates, numbers, places, headquarters
-  - First/Largest/Smallest/Highest/Longest type questions
-  - Constitutional Articles, Amendments
-  - Government schemes: exact launch year, nodal ministry, beneficiaries
-  - Scientific facts: inventions with inventor+year, SI units, formulas
-  - Geographic facts: rivers+origin, boundaries, passes, national parks
-
-🟡 HIGH-VALUE (30%):
-  - Committees & Commissions with key recommendations
-  - Economic indicators, International organizations
-  - Important battles, treaties, acts with exact years
-  - Books-Authors, Sports-Trophies, Dances-States pairs
-
-🟢 SUPPLEMENTARY (10% only if above exhausted):
-  - Conceptual understanding and definitions
-  - Process/mechanism based questions
+📌 REAL SSC MTS/GD 2024 PATTERN:
+• "The headquarters of UNESCO is located in?" → HQ location questions
+• "Mahatma Gandhi started the Dandi March in which year?" → Event + exact year
+• "Which state has the longest coastline in India?" → Superlative geographic facts
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-⚡ DISTRACTOR ENGINEERING:
+📋 QUESTION CRAFTING — MATCH SSC EXACTLY:
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-1. ALL 4 options must be from the SAME domain/category/time period
-2. For YEAR questions: correct=1950 → use 1947, 1952, 1956 (NOT random years)
-3. For PERSON questions: use people from the same field/era
-4. For PLACE questions: use places from the same region/type
-5. Include the MOST COMMON WRONG ANSWER (the "trap" option)
-6. Randomize correct answer position - distribute A/B/C/D evenly
+STEP 1 - EXTRACT: List ONLY facts clearly stated with specific data (names, dates, numbers, places).
+
+STEP 2 - RANK BY ${trendPeriod} EXAM FREQUENCY: Prioritize facts SSC has ACTUALLY asked in recent papers.
+
+STEP 3 - FRAME using EXACT SSC wording patterns:
+  • "Which of the following [specific domain]...?" (40% of SSC questions use this)
+  • "Consider the following statements: 1)... 2)... 3)... Which of the above is/are correct?" (CGL Tier-1 signature — use "Which of the above", NOT "Which of the following")
+  • "Match List-I with List-II and select the correct answer using the code given below" (exact SSC phrasing)
+  • "Arrange the following in chronological/ascending/descending order and select the correct answer"
+  • "Who among the following...?" / "Which one of the following is NOT correctly matched?"
+  • Direct: "[Specific entity] is related to/located in/established in?"
+
+CRITICAL LANGUAGE RULES (match SSC exactly):
+  • Use "Select the correct answer" NOT "Choose the correct option"
+  • Use "Which of the following" NOT "Which one of these"
+  • Use "is/are correct" NOT "is/are true"
+  • Options labeled A), B), C), D) — NOT (a), (b), (c), (d)
+  • Question must be complete, self-contained, no reference to passage/text/chapter
+  • Use formal English, no contractions, Class 10 vocabulary
+
+STEP 4 - DISTRACTOR ENGINEERING (SSC-level traps):
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-📝 OUTPUT FORMAT (STRICT):
+🏆 SSC EXAM TOPIC PRIORITY:
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-Q1. [Precise, exam-style question]
-A. [Plausible distractor from same category]
-B. [Plausible distractor from same category]
-C. [Plausible distractor from same category]
-D. [Plausible distractor from same category]
+🔴 MOST ASKED IN SSC (60%):
+  - First/Largest/Smallest/Longest/Highest superlative facts
+  - Exact years: establishment, battles, treaties, acts, schemes
+  - Constitutional Articles & Amendments with specific provisions
+  - Government schemes: launch year, ministry, beneficiaries, budget
+  - Rivers: origin, tributaries, dams, "Sorrow of" nicknames
+  - National Parks, Wildlife Sanctuaries with states
+  - Books-Authors, Inventions-Inventors with years
+  - Vitamins, Diseases, Deficiency links
+  - SI Units, Scientific instruments, Chemical formulas
+
+🟡 FREQUENTLY ASKED (30%):
+  - Committees/Commissions with chairperson and key recommendations
+  - International organizations: HQ, establishment year, head, members
+  - Historical battles/treaties with exact years and parties
+  - Sports trophies, folk dances-states, classical dances-states
+  - Economic terms, GDP components, Five Year Plans
+
+🟢 SUPPLEMENTARY (10%):
+  - Definitions of technical terms explicitly stated in PDF
+  - Process-based facts (e.g., "Photosynthesis occurs in...")
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+⚡ DISTRACTOR RULES (SSC-STANDARD):
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+1. ALL 4 options SAME category, SAME era, SAME difficulty to eliminate
+2. YEAR questions: correct=1950 → distractors 1947, 1952, 1956 (adjacent, confusable years)
+3. PERSON questions: same field, same era (e.g., all freedom fighters from 1900-1950)
+4. PLACE questions: same region/type (e.g., all southern Indian rivers)
+5. Include the MOST COMMONLY CONFUSED answer as one distractor (the "SSC trap")
+6. Distribute correct answer position evenly across A/B/C/D
+7. Options in logical order: years ascending, names alphabetical, values ascending
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+📝 OUTPUT FORMAT (STRICT — SSC PAPER FORMAT):
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Q1. [Exact SSC-style question — reads like it was copied from an SSC paper]
+A. [Real, plausible option from same category]
+B. [Real, plausible option from same category]
+C. [Real, plausible option from same category]
+D. [Real, plausible option from same category]
 Correct Answer: [A/B/C/D]
-Explanation (Testbook Style): [6-8 sentences: ① Correct answer with EXACT quote/proof from PDF ② Simple explanation ③ Why Option X is wrong ④ Why Option Y is wrong ⑤ Why Option Z is wrong ⑥ Memory trick/mnemonic ⑦ SSC exam relevance note ⑧ Related fact worth remembering]
+Explanation (Testbook Style): [6-8 sentences: ① Correct answer with EXACT proof from PDF ② Clear explanation ③ Why Option X is wrong (with real fact) ④ Why Option Y is wrong ⑤ Why Option Z is wrong ⑥ Memory trick/mnemonic ⑦ "This topic was asked in SSC [exam name] [year]" relevance note ⑧ Related fact worth remembering]
 
 Q2. [Next question...]
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 🚫 ABSOLUTE PROHIBITIONS:
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-❌ NEVER fabricate, assume, or hallucinate any fact not explicitly in the PDF
-❌ NEVER use your training knowledge to fill gaps — ONLY use what the PDF states
-❌ NEVER create a question if you are less than 100% certain the answer is in the PDF
+❌ NEVER fabricate or hallucinate any fact not explicitly in the PDF
+❌ NEVER use training knowledge to fill gaps — ONLY PDF content
+❌ NEVER create a question if less than 100% certain answer is in PDF
 ❌ NEVER ask "What is discussed in this chapter/passage?"
-❌ NEVER ask "According to the passage..." (SSC never frames this way)
+❌ NEVER ask "According to the passage/text..." (SSC never does this)
 ❌ NEVER use "All of the above" or "None of the above"
 ❌ NEVER make two options obviously wrong
 ❌ NEVER repeat the same concept in multiple questions
-❌ NEVER ask opinion-based or subjective questions
+❌ NEVER ask opinion/subjective questions
 ❌ NEVER include "Cannot be determined" or "Not mentioned"
-❌ If a fact is ambiguous or unclear → SKIP IT entirely
-❌ If you're unsure about a date/name/number → DO NOT include it
+❌ NEVER write questions that sound like classroom quizzes — they must sound like REAL EXAM questions
+❌ If a fact is ambiguous → SKIP IT entirely
+❌ If unsure about any detail → DO NOT include it
 
-✅ MUST DO:
-✅ Every correct answer must have a direct, traceable source in the PDF text
-✅ Use simple English (Class 10 level vocabulary)
-✅ Include exact names, dates, numbers AS WRITTEN in PDF (no paraphrasing facts)
-✅ Test ONE clear concept per question
-✅ Make every question independently answerable
-✅ Difficulty MUST be ${difficultyLevel.toUpperCase()} as specified above
-✅ If you can only create fewer accurate questions than requested, that is BETTER than creating inaccurate ones
+✅ MANDATORY:
+✅ Every question must be INDISTINGUISHABLE from a real SSC paper question
+✅ Every correct answer has direct, traceable source in PDF
+✅ Simple English, Class 10 vocabulary, formal tone
+✅ Exact names/dates/numbers AS WRITTEN in PDF
+✅ One clear concept per question, independently answerable
+✅ Difficulty: ${difficultyLevel.toUpperCase()} as specified above
+✅ Accuracy > Quantity — fewer accurate questions beats more inaccurate ones
+✅ Question language must match official SSC English medium paper tone
 
 📄 SOURCE CONTENT (${pageInfo}):
 ${safeContent}
 
-Generate EXACTLY ${numQuestions} EXAM-GRADE ${difficultyLevel.toUpperCase()} MCQs. ONLY use facts explicitly present in the content above. If the content doesn't support ${numQuestions} accurate questions, generate as many as you can with 100% accuracy — accuracy is MORE important than quantity.`;
+Generate EXACTLY ${numQuestions} SSC-EXAM-IDENTICAL ${difficultyLevel.toUpperCase()} MCQs. Every question must read as if lifted directly from an SSC ${trendPeriod} paper. ONLY use facts explicitly present above. If content doesn't support ${numQuestions} accurate questions, generate fewer with 100% accuracy.`;
 
     // Try up to 10 different API keys with proper rotation
     for (let attempt = 0; attempt < Math.min(10, totalKeys); attempt++) {
