@@ -490,7 +490,7 @@ Generate a BALANCED MIX of EXACTLY 50% Easy and 50% Hard questions:
       questionTypeRatio = '50% Basic Recall + 50% Complex Reasoning (Alternating)';
     }
 
-     const prompt = `You are the ACTUAL SSC EXAM PAPER SETTER who has designed questions for CGL 2023, CGL 2024, CHSL 2024, MTS 2024, GD 2024, CPO 2024, and Stenographer 2024 papers. Your job is to produce questions INDISTINGUISHABLE from real SSC papers.
+     const prompt = `You are the ACTUAL SSC EXAM PAPER SETTER who has designed questions for ${examYearList} papers. Your job is to produce questions INDISTINGUISHABLE from real SSC papers.
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 🛑 ZERO HALLUCINATION PROTOCOL (HIGHEST PRIORITY):
