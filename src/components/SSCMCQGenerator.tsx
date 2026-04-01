@@ -401,10 +401,12 @@ const SSCMCQGenerator = () => {
     // Safe content extraction
     const safeContent = String(content || '').substring(0, 50000);
     
-    // Get current date for exam trends
+    // Get current date for exam trends — always reference previous year to today
     const currentDate = new Date();
-    const trendStartDate = new Date(currentDate.getFullYear() - 1, currentDate.getMonth() - 6, 1);
-    const trendPeriod = `${trendStartDate.toLocaleDateString('en-US', { month: 'short', year: 'numeric' })} to ${currentDate.toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}`;
+    const currentYear = currentDate.getFullYear();
+    const prevYear = currentYear - 1;
+    const trendPeriod = `${prevYear} to ${currentYear}`;
+    const examYearList = `CGL ${prevYear}, CGL ${currentYear}, CHSL ${prevYear}, CHSL ${currentYear}, MTS ${prevYear}, MTS ${currentYear}, GD ${prevYear}, GD ${currentYear}, CPO ${prevYear}, CPO ${currentYear}, Stenographer ${prevYear}, Stenographer ${currentYear}`;
 
     // EXACT DIFFICULTY LEVEL INSTRUCTIONS
     let difficultyInstructions = '';
@@ -488,7 +490,7 @@ Generate a BALANCED MIX of EXACTLY 50% Easy and 50% Hard questions:
       questionTypeRatio = '50% Basic Recall + 50% Complex Reasoning (Alternating)';
     }
 
-     const prompt = `You are the ACTUAL SSC EXAM PAPER SETTER who has designed questions for CGL 2023, CGL 2024, CHSL 2024, MTS 2024, GD 2024, CPO 2024, and Stenographer 2024 papers. Your job is to produce questions INDISTINGUISHABLE from real SSC papers.
+     const prompt = `You are the ACTUAL SSC EXAM PAPER SETTER who has designed questions for ${examYearList} papers. Your job is to produce questions INDISTINGUISHABLE from real SSC papers.
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 🛑 ZERO HALLUCINATION PROTOCOL (HIGHEST PRIORITY):
@@ -513,7 +515,7 @@ ${difficultyInstructions}
 
 Your questions must match the EXACT style, difficulty, and language of questions asked in recent SSC exams. Study these REAL SSC question patterns and replicate them precisely:
 
-📌 REAL SSC CGL 2024 PATTERN EXAMPLES:
+📌 REAL SSC CGL ${prevYear}-${currentYear} PATTERN EXAMPLES:
 • "The Palk Strait separates India from which country?" → Direct, one-fact, no ambiguity
 • "Who was the first Governor-General of independent India?" → Tests specific 'first/last' facts
 • "Article 370 of the Indian Constitution was related to which state?" → Constitutional article + specific link
@@ -521,13 +523,13 @@ Your questions must match the EXACT style, difficulty, and language of questions
 • "Arrange the following events in chronological order: I. Battle of Plassey II. Battle of Buxar III. Battle of Panipat" → Sequencing with close-era events
 • "Consider the following statements about the President of India: 1) Must be 35+ years 2) Must be a member of Lok Sabha. Which is/are correct?" → Statement verification with traps
 
-📌 REAL SSC CHSL 2024 PATTERN:
+📌 REAL SSC CHSL ${prevYear}-${currentYear} PATTERN:
 • "Which river is known as 'Sorrow of Bihar'?" → Nickname/alias questions
 • "Brass is an alloy of which metals?" → Composition/constituent questions
 • "Who authored the book 'Discovery of India'?" → Direct author-book pairs
 • "Which vitamin deficiency causes Night Blindness?" → Cause-effect medical/science facts
 
-📌 REAL SSC MTS/GD 2024 PATTERN:
+📌 REAL SSC MTS/GD ${prevYear}-${currentYear} PATTERN:
 • "The headquarters of UNESCO is located in?" → HQ location questions
 • "Mahatma Gandhi started the Dandi March in which year?" → Event + exact year
 • "Which state has the longest coastline in India?" → Superlative geographic facts
