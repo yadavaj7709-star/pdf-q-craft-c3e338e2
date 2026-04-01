@@ -401,10 +401,12 @@ const SSCMCQGenerator = () => {
     // Safe content extraction
     const safeContent = String(content || '').substring(0, 50000);
     
-    // Get current date for exam trends
+    // Get current date for exam trends — always reference previous year to today
     const currentDate = new Date();
-    const trendStartDate = new Date(currentDate.getFullYear() - 1, currentDate.getMonth() - 6, 1);
-    const trendPeriod = `${trendStartDate.toLocaleDateString('en-US', { month: 'short', year: 'numeric' })} to ${currentDate.toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}`;
+    const currentYear = currentDate.getFullYear();
+    const prevYear = currentYear - 1;
+    const trendPeriod = `${prevYear} to ${currentYear}`;
+    const examYearList = `CGL ${prevYear}, CGL ${currentYear}, CHSL ${prevYear}, CHSL ${currentYear}, MTS ${prevYear}, MTS ${currentYear}, GD ${prevYear}, GD ${currentYear}, CPO ${prevYear}, CPO ${currentYear}, Stenographer ${prevYear}, Stenographer ${currentYear}`;
 
     // EXACT DIFFICULTY LEVEL INSTRUCTIONS
     let difficultyInstructions = '';
