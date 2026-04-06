@@ -1075,7 +1075,7 @@ Generate EXACTLY ${numQuestions} SSC-EXAM-IDENTICAL ${difficultyLevel.toUpperCas
           <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-2">
             ⚡ SSC MCQ Generator Ultra
           </h1>
-          <p className="text-gray-600">Lightning-Fast Processing • AI-Powered • 100% Accurate</p>
+          <p className="text-gray-600 text-sm">Upload PDF → Generate SSC-level MCQs</p>
           {!pdfLibLoaded && (
             <p className="text-sm text-amber-600 mt-2 animate-pulse">⏳ Loading PDF engine...</p>
           )}
