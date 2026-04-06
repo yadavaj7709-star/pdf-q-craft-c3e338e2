@@ -9,6 +9,10 @@ const corsHeaders = {
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!;
 const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
 
+// Read admin credentials from environment variables only
+const SEED_ADMIN_EMAIL = Deno.env.get('SEED_ADMIN_EMAIL');
+const SEED_ADMIN_PASSWORD = Deno.env.get('SEED_ADMIN_PASSWORD');
+
 // Simple password hashing using PBKDF2 (Web Crypto compatible)
 async function hashPassword(password: string): Promise<string> {
   const encoder = new TextEncoder();
@@ -41,6 +45,16 @@ serve(async (req) => {
     return new Response(null, { headers: corsHeaders });
   }
 
+  // Validate that credentials come from environment variables
+  if (!SEED_ADMIN_EMAIL || !SEED_ADMIN_PASSWORD) {
+    return new Response(JSON.stringify({ 
+      error: 'SEED_ADMIN_EMAIL and SEED_ADMIN_PASSWORD environment variables must be set' 
+    }), {
+      status: 500,
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    });
+  }
+
   const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 
   try {
@@ -48,31 +62,30 @@ serve(async (req) => {
     const { data: existingAdmin } = await supabase
       .from('admins')
       .select('id')
-      .eq('email', 'yadavaj9527@gmail.com')
+      .eq('email', SEED_ADMIN_EMAIL)
       .maybeSingle();
 
     if (existingAdmin) {
       return new Response(JSON.stringify({ 
-        message: 'Admin already exists',
-        email: 'yadavaj9527@gmail.com'
+        message: 'Admin already exists'
       }), {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }
 
     // Hash password using PBKDF2
-    const passwordHash = await hashPassword('Deadman@9527');
+    const passwordHash = await hashPassword(SEED_ADMIN_PASSWORD);
 
     // Insert admin
     const { data: admin, error } = await supabase
       .from('admins')
       .insert({
-        email: 'yadavaj9527@gmail.com',
+        email: SEED_ADMIN_EMAIL,
         password_hash: passwordHash,
         role: 'SUPER_ADMIN',
         is_active: true
       })
-      .select()
+      .select('id, email')
       .single();
 
     if (error) {
@@ -80,20 +93,18 @@ serve(async (req) => {
       throw error;
     }
 
-    console.log('Admin created successfully:', admin.email);
+    console.log('Admin created successfully');
 
     return new Response(JSON.stringify({ 
       success: true,
-      message: 'Admin created successfully',
-      email: 'yadavaj9527@gmail.com'
+      message: 'Admin created successfully'
     }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
 
   } catch (error: unknown) {
     console.error('Seed admin error:', error);
-    const err = error as Error;
-    return new Response(JSON.stringify({ error: err.message }), {
+    return new Response(JSON.stringify({ error: 'Failed to seed admin' }), {
       status: 500,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
