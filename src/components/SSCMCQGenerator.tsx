@@ -1028,15 +1028,34 @@ Generate EXACTLY ${numQuestions} SSC-EXAM-IDENTICAL ${difficultyLevel.toUpperCas
         mcq.correct = expMatch ? expMatch[1].toLowerCase() : 'a';
       }
       
-      // Accept questions with valid structure
+      // Accept questions with valid structure + quality gates
+      const passesQualityGate = (m: MCQ): boolean => {
+        const q = (m.question || '').trim();
+        if (q.length < 15 || q.length > 320) return false;
+        // Block meta-references that don't belong in SSC papers
+        if (/\b(passage|the text|the chapter|as mentioned|given (above|below)|according to the (passage|text|author))\b/i.test(q)) return false;
+        // Block banned option phrases
+        const optsJoined = m.options.join(' || ').toLowerCase();
+        if (/(all of the above|none of the above|both [a-d] and [a-d]|cannot be determined|not mentioned)/i.test(optsJoined)) return false;
+        // Options must be non-empty and reasonably short / parallel
+        const optTexts = m.options.map(o => o.replace(/^[A-Da-d][\.\):]\s*/, '').trim());
+        if (optTexts.some(o => o.length < 1 || o.length > 140)) return false;
+        // All four options must be distinct
+        const lowered = optTexts.map(o => o.toLowerCase());
+        if (new Set(lowered).size !== 4) return false;
+        // Explanation must be substantive
+        if (!m.explanation || m.explanation.trim().length < 60) return false;
+        return true;
+      };
+
       if (mcq.question && mcq.question.trim().length > 10 && mcq.options.length === 4 && mcq.correct) {
-        questions.push(mcq);
+        if (passesQualityGate(mcq)) questions.push(mcq);
       } else if (mcq.question && mcq.options.length === 4 && !mcq.correct && mcq.explanation) {
         // Try to recover correct answer from explanation
         const expMatch = mcq.explanation.match(/\b([A-Da-d])\b.*(?:is correct|correct answer)/i);
         if (expMatch) {
           mcq.correct = expMatch[1].toLowerCase();
-          questions.push(mcq);
+          if (passesQualityGate(mcq)) questions.push(mcq);
         }
       }
     }
