@@ -699,10 +699,11 @@ Generate EXACTLY ${numQuestions} SSC-EXAM-IDENTICAL ${difficultyLevel.toUpperCas
           body: JSON.stringify({
             contents: [{ parts: [{ text: prompt }] }],
             generationConfig: {
-              maxOutputTokens: Math.min(numQuestions * 1200, 24000),
-              temperature: 0.01, // Near-zero temperature: maximum determinism, zero hallucination
-              topP: 0.85,
-              topK: 10
+              maxOutputTokens: Math.min(numQuestions * 1400, 32000),
+              temperature: 0.05, // Very low: deterministic but not brittle
+              topP: 0.9,
+              topK: 20,
+              candidateCount: 1
             }
           })
         });
