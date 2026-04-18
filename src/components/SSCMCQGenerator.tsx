@@ -496,14 +496,28 @@ Generate a BALANCED MIX of EXACTLY 50% Easy and 50% Hard questions:
 🛑 ZERO HALLUCINATION PROTOCOL (HIGHEST PRIORITY):
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-BEFORE generating ANY question, you MUST follow this verification:
+MANDATORY 2-PASS WORKFLOW (do this silently, do NOT print Pass 1):
 
-1. QUOTE CHECK: For every fact you use, mentally quote the EXACT sentence from the PDF. If you cannot find it → DO NOT create that question.
-2. ANSWER VERIFICATION: The correct answer MUST be explicitly stated in the PDF. No changes, rounding, or approximation.
-3. OPTION VERIFICATION: Every distractor must be a REAL entity from the SAME domain. Do NOT invent anything.
-4. CROSS-CHECK: Re-read the PDF and verify premise, answer, all options, and uniqueness of correct answer.
-5. AMBIGUITY RULE: If unclear or interpretable multiple ways → SKIP IT.
-6. NO INFERENCE RULE: Do NOT combine facts or draw conclusions. Each question tests ONE explicitly stated fact.
+PASS 1 — FACT EXTRACTION (internal, do not output):
+  • Read the SOURCE CONTENT below sentence by sentence.
+  • Build an internal list of ATOMIC FACTS in the exact form: [SUBJECT] — [RELATION] — [OBJECT] — (verbatim quote, ≤25 words).
+  • Only include facts where SUBJECT, RELATION, and OBJECT are ALL explicitly written in the PDF (no inference, no synonyms, no merging across paragraphs).
+  • Discard any fact that is vague, incomplete, opinion-based, or appears in a heading/footer/page number.
+  • Rank facts by SSC exam value (superlatives, dates, articles, schemes, capitals, inventors, alloys, vitamins, HQ, nicknames, etc.).
+
+PASS 2 — QUESTION GENERATION (this is what you output):
+  • Use ONLY facts from your Pass 1 list. One question per fact. Never reuse the same fact twice.
+  • For every question you write, the correct option MUST appear verbatim (or as a direct paraphrase of a noun phrase) in the source PDF.
+
+VERIFICATION CHECKLIST (apply to every single question before writing it):
+1. QUOTE CHECK: You can point to the EXACT sentence in the PDF that contains the answer. If not → SKIP.
+2. ANSWER VERIFICATION: The correct answer is EXPLICITLY stated in the PDF — no rounding, no approximation, no synonym swap.
+3. OPTION VERIFICATION: All 4 options are REAL entities from the SAME category, era, and domain. Distractors must be plausible to a well-prepared SSC aspirant — never absurd, never from a different topic.
+4. UNIQUENESS: Exactly ONE option is correct. No second option is even partially correct.
+5. SELF-CONTAINED: A student reading ONLY the question (no PDF, no passage) can understand and attempt it.
+6. AMBIGUITY RULE: If the fact is unclear, contradicted elsewhere in the PDF, or has multiple valid readings → SKIP IT.
+7. NO INFERENCE RULE: Do NOT combine two facts. Do NOT compute. Do NOT draw conclusions. Each question tests ONE explicitly stated fact.
+8. NO META RULE: Never reference "the passage", "the text", "the chapter", "the author says", "as mentioned above", "given data", or page numbers.
 
 ${difficultyInstructions}
 
@@ -602,13 +616,22 @@ STEP 4 - DISTRACTOR ENGINEERING (SSC-level traps):
 📝 OUTPUT FORMAT (STRICT — SSC PAPER FORMAT):
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-Q1. [Exact SSC-style question — reads like it was copied from an SSC paper]
-A. [Real, plausible option from same category]
+Q1. [Exact SSC-style question — reads like it was copied from an SSC paper. 12-30 words. No reference to passage/text.]
+A. [Real, plausible option from same category — 1-6 words ideally]
 B. [Real, plausible option from same category]
 C. [Real, plausible option from same category]
 D. [Real, plausible option from same category]
 Correct Answer: [A/B/C/D]
-Explanation (Testbook Style): [6-8 sentences: ① Correct answer with EXACT proof from PDF ② Clear explanation ③ Why Option X is wrong (with real fact) ④ Why Option Y is wrong ⑤ Why Option Z is wrong ⑥ Memory trick/mnemonic ⑦ "This topic was asked in SSC [exam name] [year]" relevance note ⑧ Related fact worth remembering]
+Explanation (Testbook Style): [Write 6-8 full sentences in this exact order, joined into one paragraph:
+  ① State the correct answer in one line and quote the EXACT supporting line from the PDF in double quotes.
+  ② Give 1-2 sentences of background context (what the topic is, why it matters).
+  ③ Explain why option A is wrong (if not correct) — name the real entity it actually refers to.
+  ④ Explain why option B is wrong (if not correct) — name the real entity it actually refers to.
+  ⑤ Explain why option C is wrong (if not correct) — name the real entity it actually refers to.
+  ⑥ Explain why option D is wrong (if not correct) — name the real entity it actually refers to.
+  ⑦ A short memory trick, mnemonic, or one related fact a student should remember.
+  ⑧ Exam relevance: "This concept has been asked in SSC [exam] [year]" or "High-frequency topic in SSC GK section".
+Use simple Class-10 English. No bullet points. No markdown. No emojis inside the explanation.]
 
 Q2. [Next question...]
 
@@ -620,11 +643,13 @@ Q2. [Next question...]
 ❌ NEVER create a question if less than 100% certain answer is in PDF
 ❌ NEVER ask "What is discussed in this chapter/passage?"
 ❌ NEVER ask "According to the passage/text..." (SSC never does this)
-❌ NEVER use "All of the above" or "None of the above"
-❌ NEVER make two options obviously wrong
-❌ NEVER repeat the same concept in multiple questions
+❌ NEVER use "All of the above", "None of the above", "Both A and B", "Cannot be determined", "Not mentioned"
+❌ NEVER make two options obviously wrong (all 4 must look defensible at first glance)
+❌ NEVER repeat the same fact, entity, or concept across two questions in this batch
 ❌ NEVER ask opinion/subjective questions
-❌ NEVER include "Cannot be determined" or "Not mentioned"
+❌ NEVER write a question shorter than 10 words or longer than 35 words
+❌ NEVER write an option longer than 12 words (keep options crisp and parallel)
+❌ NEVER use vague qualifiers: "some", "many", "often", "usually", "approximately", "around"
 ❌ NEVER write questions that sound like classroom quizzes — they must sound like REAL EXAM questions
 ❌ If a fact is ambiguous → SKIP IT entirely
 ❌ If unsure about any detail → DO NOT include it
@@ -674,10 +699,11 @@ Generate EXACTLY ${numQuestions} SSC-EXAM-IDENTICAL ${difficultyLevel.toUpperCas
           body: JSON.stringify({
             contents: [{ parts: [{ text: prompt }] }],
             generationConfig: {
-              maxOutputTokens: Math.min(numQuestions * 1200, 24000),
-              temperature: 0.01, // Near-zero temperature: maximum determinism, zero hallucination
-              topP: 0.85,
-              topK: 10
+              maxOutputTokens: Math.min(numQuestions * 1400, 32000),
+              temperature: 0.05, // Very low: deterministic but not brittle
+              topP: 0.9,
+              topK: 20,
+              candidateCount: 1
             }
           })
         });
@@ -1002,15 +1028,34 @@ Generate EXACTLY ${numQuestions} SSC-EXAM-IDENTICAL ${difficultyLevel.toUpperCas
         mcq.correct = expMatch ? expMatch[1].toLowerCase() : 'a';
       }
       
-      // Accept questions with valid structure
+      // Accept questions with valid structure + quality gates
+      const passesQualityGate = (m: MCQ): boolean => {
+        const q = (m.question || '').trim();
+        if (q.length < 15 || q.length > 320) return false;
+        // Block meta-references that don't belong in SSC papers
+        if (/\b(passage|the text|the chapter|as mentioned|given (above|below)|according to the (passage|text|author))\b/i.test(q)) return false;
+        // Block banned option phrases
+        const optsJoined = m.options.join(' || ').toLowerCase();
+        if (/(all of the above|none of the above|both [a-d] and [a-d]|cannot be determined|not mentioned)/i.test(optsJoined)) return false;
+        // Options must be non-empty and reasonably short / parallel
+        const optTexts = m.options.map(o => o.replace(/^[A-Da-d][\.\):]\s*/, '').trim());
+        if (optTexts.some(o => o.length < 1 || o.length > 140)) return false;
+        // All four options must be distinct
+        const lowered = optTexts.map(o => o.toLowerCase());
+        if (new Set(lowered).size !== 4) return false;
+        // Explanation must be substantive
+        if (!m.explanation || m.explanation.trim().length < 60) return false;
+        return true;
+      };
+
       if (mcq.question && mcq.question.trim().length > 10 && mcq.options.length === 4 && mcq.correct) {
-        questions.push(mcq);
+        if (passesQualityGate(mcq)) questions.push(mcq);
       } else if (mcq.question && mcq.options.length === 4 && !mcq.correct && mcq.explanation) {
         // Try to recover correct answer from explanation
         const expMatch = mcq.explanation.match(/\b([A-Da-d])\b.*(?:is correct|correct answer)/i);
         if (expMatch) {
           mcq.correct = expMatch[1].toLowerCase();
-          questions.push(mcq);
+          if (passesQualityGate(mcq)) questions.push(mcq);
         }
       }
     }
