@@ -496,14 +496,28 @@ Generate a BALANCED MIX of EXACTLY 50% Easy and 50% Hard questions:
 🛑 ZERO HALLUCINATION PROTOCOL (HIGHEST PRIORITY):
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-BEFORE generating ANY question, you MUST follow this verification:
+MANDATORY 2-PASS WORKFLOW (do this silently, do NOT print Pass 1):
 
-1. QUOTE CHECK: For every fact you use, mentally quote the EXACT sentence from the PDF. If you cannot find it → DO NOT create that question.
-2. ANSWER VERIFICATION: The correct answer MUST be explicitly stated in the PDF. No changes, rounding, or approximation.
-3. OPTION VERIFICATION: Every distractor must be a REAL entity from the SAME domain. Do NOT invent anything.
-4. CROSS-CHECK: Re-read the PDF and verify premise, answer, all options, and uniqueness of correct answer.
-5. AMBIGUITY RULE: If unclear or interpretable multiple ways → SKIP IT.
-6. NO INFERENCE RULE: Do NOT combine facts or draw conclusions. Each question tests ONE explicitly stated fact.
+PASS 1 — FACT EXTRACTION (internal, do not output):
+  • Read the SOURCE CONTENT below sentence by sentence.
+  • Build an internal list of ATOMIC FACTS in the exact form: [SUBJECT] — [RELATION] — [OBJECT] — (verbatim quote, ≤25 words).
+  • Only include facts where SUBJECT, RELATION, and OBJECT are ALL explicitly written in the PDF (no inference, no synonyms, no merging across paragraphs).
+  • Discard any fact that is vague, incomplete, opinion-based, or appears in a heading/footer/page number.
+  • Rank facts by SSC exam value (superlatives, dates, articles, schemes, capitals, inventors, alloys, vitamins, HQ, nicknames, etc.).
+
+PASS 2 — QUESTION GENERATION (this is what you output):
+  • Use ONLY facts from your Pass 1 list. One question per fact. Never reuse the same fact twice.
+  • For every question you write, the correct option MUST appear verbatim (or as a direct paraphrase of a noun phrase) in the source PDF.
+
+VERIFICATION CHECKLIST (apply to every single question before writing it):
+1. QUOTE CHECK: You can point to the EXACT sentence in the PDF that contains the answer. If not → SKIP.
+2. ANSWER VERIFICATION: The correct answer is EXPLICITLY stated in the PDF — no rounding, no approximation, no synonym swap.
+3. OPTION VERIFICATION: All 4 options are REAL entities from the SAME category, era, and domain. Distractors must be plausible to a well-prepared SSC aspirant — never absurd, never from a different topic.
+4. UNIQUENESS: Exactly ONE option is correct. No second option is even partially correct.
+5. SELF-CONTAINED: A student reading ONLY the question (no PDF, no passage) can understand and attempt it.
+6. AMBIGUITY RULE: If the fact is unclear, contradicted elsewhere in the PDF, or has multiple valid readings → SKIP IT.
+7. NO INFERENCE RULE: Do NOT combine two facts. Do NOT compute. Do NOT draw conclusions. Each question tests ONE explicitly stated fact.
+8. NO META RULE: Never reference "the passage", "the text", "the chapter", "the author says", "as mentioned above", "given data", or page numbers.
 
 ${difficultyInstructions}
 
