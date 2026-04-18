@@ -616,13 +616,22 @@ STEP 4 - DISTRACTOR ENGINEERING (SSC-level traps):
 📝 OUTPUT FORMAT (STRICT — SSC PAPER FORMAT):
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-Q1. [Exact SSC-style question — reads like it was copied from an SSC paper]
-A. [Real, plausible option from same category]
+Q1. [Exact SSC-style question — reads like it was copied from an SSC paper. 12-30 words. No reference to passage/text.]
+A. [Real, plausible option from same category — 1-6 words ideally]
 B. [Real, plausible option from same category]
 C. [Real, plausible option from same category]
 D. [Real, plausible option from same category]
 Correct Answer: [A/B/C/D]
-Explanation (Testbook Style): [6-8 sentences: ① Correct answer with EXACT proof from PDF ② Clear explanation ③ Why Option X is wrong (with real fact) ④ Why Option Y is wrong ⑤ Why Option Z is wrong ⑥ Memory trick/mnemonic ⑦ "This topic was asked in SSC [exam name] [year]" relevance note ⑧ Related fact worth remembering]
+Explanation (Testbook Style): [Write 6-8 full sentences in this exact order, joined into one paragraph:
+  ① State the correct answer in one line and quote the EXACT supporting line from the PDF in double quotes.
+  ② Give 1-2 sentences of background context (what the topic is, why it matters).
+  ③ Explain why option A is wrong (if not correct) — name the real entity it actually refers to.
+  ④ Explain why option B is wrong (if not correct) — name the real entity it actually refers to.
+  ⑤ Explain why option C is wrong (if not correct) — name the real entity it actually refers to.
+  ⑥ Explain why option D is wrong (if not correct) — name the real entity it actually refers to.
+  ⑦ A short memory trick, mnemonic, or one related fact a student should remember.
+  ⑧ Exam relevance: "This concept has been asked in SSC [exam] [year]" or "High-frequency topic in SSC GK section".
+Use simple Class-10 English. No bullet points. No markdown. No emojis inside the explanation.]
 
 Q2. [Next question...]
 
@@ -634,11 +643,13 @@ Q2. [Next question...]
 ❌ NEVER create a question if less than 100% certain answer is in PDF
 ❌ NEVER ask "What is discussed in this chapter/passage?"
 ❌ NEVER ask "According to the passage/text..." (SSC never does this)
-❌ NEVER use "All of the above" or "None of the above"
-❌ NEVER make two options obviously wrong
-❌ NEVER repeat the same concept in multiple questions
+❌ NEVER use "All of the above", "None of the above", "Both A and B", "Cannot be determined", "Not mentioned"
+❌ NEVER make two options obviously wrong (all 4 must look defensible at first glance)
+❌ NEVER repeat the same fact, entity, or concept across two questions in this batch
 ❌ NEVER ask opinion/subjective questions
-❌ NEVER include "Cannot be determined" or "Not mentioned"
+❌ NEVER write a question shorter than 10 words or longer than 35 words
+❌ NEVER write an option longer than 12 words (keep options crisp and parallel)
+❌ NEVER use vague qualifiers: "some", "many", "often", "usually", "approximately", "around"
 ❌ NEVER write questions that sound like classroom quizzes — they must sound like REAL EXAM questions
 ❌ If a fact is ambiguous → SKIP IT entirely
 ❌ If unsure about any detail → DO NOT include it
