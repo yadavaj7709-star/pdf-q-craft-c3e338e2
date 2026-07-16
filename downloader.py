@@ -166,11 +166,11 @@ def try_extract_local_chrome_cookies():
                 pass
     return False
 
-def get_working_proxy_context(browser, is_headless):
+def get_working_proxy_context(browser, is_cloud):
     """
     Finds a working India-based HTTP proxy to bypass CloudFront geo-blocking when running in the cloud.
     """
-    if not is_headless:
+    if not is_cloud:
         print("Running locally. Using direct connection (no proxy)...")
         context = browser.new_context(
             user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
@@ -282,7 +282,8 @@ def run_downloader():
             )
             
         # 2. Get the working context (routes through Indian proxy in the cloud to bypass geo-blocking)
-        context, active_proxy = get_working_proxy_context(browser, is_headless)
+        is_cloud = "GITHUB_ACTIONS" in os.environ
+        context, active_proxy = get_working_proxy_context(browser, is_cloud)
         
         # Load state cookies into context if state file exists
         if os.path.exists(STATE_PATH):
