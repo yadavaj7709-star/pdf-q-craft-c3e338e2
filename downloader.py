@@ -2,7 +2,6 @@ import os
 import sys
 import time
 from playwright.sync_api import sync_playwright
-from playwright_stealth import Stealth
 
 # Cross-platform paths configuration
 WORKSPACE = os.path.dirname(os.path.abspath(__file__))
@@ -64,7 +63,7 @@ def select_vuetify_option(page, label_text, option_text):
         return False
 
 def run_downloader():
-    # Determine headless mode based on environment (headed locally for reCAPTCHA bypass)
+    # Determine headless mode based on environment
     is_headless = "GITHUB_ACTIONS" in os.environ
     print(f"Launching Playwright (headless={is_headless})...")
     
@@ -94,6 +93,7 @@ def run_downloader():
             print(f"Loading session state from {STATE_PATH}...")
             context = browser.new_context(
                 storage_state=STATE_PATH,
+                user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
                 viewport={"width": 1280, "height": 1024},
                 locale="en-US",
                 timezone_id="Asia/Kolkata"
@@ -101,16 +101,38 @@ def run_downloader():
         else:
             print("Session state file not found. Starting with fresh context...")
             context = browser.new_context(
+                user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
                 viewport={"width": 1280, "height": 1024},
                 locale="en-US",
                 timezone_id="Asia/Kolkata"
             )
             
-        page = context.new_page()
+        # Advanced stealth injection to bypass reCAPTCHA v3 (working logic from setup_session)
+        context.add_init_script("""
+            // Hide webdriver
+            Object.defineProperty(navigator, 'webdriver', {
+                get: () => undefined
+            });
+            
+            // Mock chrome object
+            window.chrome = {
+                runtime: {}
+            };
+            
+            // Overwrite languages
+            Object.defineProperty(navigator, 'languages', {
+                get: () => ['en-US', 'en']
+            });
+            
+            // Overwrite permissions
+            const originalQuery = navigator.permissions.query;
+            navigator.permissions.query = (parameters) =>
+                parameters.name === 'notifications' ?
+                    Promise.resolve({ state: Notification.permission }) :
+                    originalQuery(parameters);
+        """)
         
-        # Apply full, industry-standard stealth settings to bypass all bot-detectors/captchas
-        stealth = Stealth()
-        stealth.apply_stealth_sync(page)
+        page = context.new_page()
         
         url = "https://learner.vierp.in/grade-card"
         print(f"Navigating to {url}...")
