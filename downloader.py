@@ -6,6 +6,7 @@ import base64
 import sqlite3
 import shutil
 import ctypes
+import urllib.request
 from ctypes import wintypes
 from cryptography.hazmat.primitives.ciphers.aead import AESGCM
 from playwright.sync_api import sync_playwright
@@ -104,7 +105,6 @@ def try_extract_local_chrome_cookies():
     temp_db_path = os.path.join(WORKSPACE, "temp_cookies.db")
     
     try:
-        # Attempt copy (will raise PermissionError if Chrome has exclusive lock)
         shutil.copy2(cookies_db_path, temp_db_path)
     except Exception as e:
         print(f"Notice: Google Chrome is currently open/locked ({e}). Using cached session.")
@@ -145,7 +145,6 @@ def try_extract_local_chrome_cookies():
                 
         conn.close()
         
-        # Clean up temp db file
         if os.path.exists(temp_db_path):
             os.remove(temp_db_path)
             
@@ -167,6 +166,77 @@ def try_extract_local_chrome_cookies():
                 pass
     return False
 
+def get_working_proxy_context(browser, is_headless):
+    """
+    Finds a working India-based HTTP proxy to bypass CloudFront geo-blocking when running in the cloud.
+    """
+    if not is_headless:
+        print("Running locally. Using direct connection (no proxy)...")
+        context = browser.new_context(
+            user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+            viewport={"width": 1280, "height": 1024},
+            locale="en-US",
+            timezone_id="Asia/Kolkata"
+        )
+        return context, None
+
+    print("Running in cloud. Fetching free Indian proxies list...")
+    proxies = []
+    try:
+        url = 'https://api.proxyscrape.com/v4/free-proxy-list/get?request=display_proxies&proxy_format=ipport&format=text&country=in'
+        req = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0'})
+        response = urllib.request.urlopen(req, timeout=10)
+        proxies = response.read().decode('utf-8').split()
+        print(f"Found {len(proxies)} Indian proxies.")
+    except Exception as e:
+        print(f"Failed to fetch proxy list: {e}")
+        
+    for proxy in proxies[:15]:  # Try the top 15 proxies
+        print(f"Testing Indian proxy: {proxy}...")
+        try:
+            context = browser.new_context(
+                proxy={"server": f"http://{proxy}"},
+                user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+                viewport={"width": 1280, "height": 1024},
+                locale="en-US",
+                timezone_id="Asia/Kolkata"
+            )
+            # Add basic stealth scripts
+            context.add_init_script("""
+                Object.defineProperty(navigator, 'webdriver', { get: () => undefined });
+                window.chrome = { runtime: {} };
+                Object.defineProperty(navigator, 'languages', { get: () => ['en-US', 'en'] });
+            """)
+            page = context.new_page()
+            
+            # Quick test navigation
+            page.goto("https://learner.vierp.in/", timeout=15000)
+            title = page.title()
+            content = page.content()
+            
+            if "403" not in title and "Forbidden" not in title and "CloudFront" not in content:
+                print(f"SUCCESS: Proxy {proxy} bypassed CloudFront! Using it for execution.")
+                page.close()
+                return context, proxy
+            else:
+                print(f"Proxy {proxy} blocked by CloudFront.")
+                context.close()
+        except Exception as proxy_err:
+            print(f"Proxy {proxy} failed connection: {proxy_err}")
+            try:
+                context.close()
+            except Exception:
+                pass
+                
+    print("All Indian proxies failed/blocked. Falling back to direct connection...")
+    context = browser.new_context(
+        user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        viewport={"width": 1280, "height": 1024},
+        locale="en-US",
+        timezone_id="Asia/Kolkata"
+    )
+    return context, None
+
 def select_vuetify_option(page, label_text, option_text):
     print(f"Selecting '{option_text}' for '{label_text}'...")
     try:
@@ -183,7 +253,7 @@ def select_vuetify_option(page, label_text, option_text):
         return False
 
 def run_downloader():
-    # 1. Attempt to extract fresh cookies from the user's active Chrome profile
+    # 1. Attempt to extract fresh cookies from the user's active Chrome profile (only locally)
     try_extract_local_chrome_cookies()
 
     # Determine headless mode based on environment
@@ -211,24 +281,18 @@ def run_downloader():
                 ]
             )
             
-        # Load state if it exists
+        # 2. Get the working context (routes through Indian proxy in the cloud to bypass geo-blocking)
+        context, active_proxy = get_working_proxy_context(browser, is_headless)
+        
+        # Load state cookies into context if state file exists
         if os.path.exists(STATE_PATH):
             print(f"Loading session state from {STATE_PATH}...")
-            context = browser.new_context(
-                storage_state=STATE_PATH,
-                user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
-                viewport={"width": 1280, "height": 1024},
-                locale="en-US",
-                timezone_id="Asia/Kolkata"
-            )
-        else:
-            print("Session state file not found. Starting with fresh context...")
-            context = browser.new_context(
-                user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
-                viewport={"width": 1280, "height": 1024},
-                locale="en-US",
-                timezone_id="Asia/Kolkata"
-            )
+            try:
+                with open(STATE_PATH, "r", encoding="utf-8") as f:
+                    state_data = json.load(f)
+                context.add_cookies(state_data.get("cookies", []))
+            except Exception as e:
+                print(f"Warning: Failed to load storage state: {e}")
             
         # Advanced stealth injection to bypass reCAPTCHA v3 (working logic from setup_session)
         context.add_init_script("""
@@ -279,7 +343,7 @@ def run_downloader():
         try:
             page.wait_for_selector(
                 "button:has-text('SIGN IN'), div.v-select:has-text('Academic Year'), div.v-input:has-text('Academic Year')", 
-                timeout=20000
+                timeout=25000
             )
         except Exception as e:
             print(f"Warning: Timeout waiting for page content to hydrate: {e}")
