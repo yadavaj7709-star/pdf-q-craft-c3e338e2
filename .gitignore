@@ -26,6 +26,9 @@ dist-ssr
 # Local environment secrets
 .env
 
+# Local session state
+state.json
+
 # Local Chrome Profile Data
 chrome_profile/
 

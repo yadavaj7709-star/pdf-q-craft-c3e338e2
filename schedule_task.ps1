@@ -3,6 +3,8 @@
 # Configured for maximum resilience (runs even if laptop was off, and retries/restarts on failure).
 
 $ScriptPath = "c:\Users\Ajay.AJAY\OneDrive\Desktop\test\downloader.py"
+$PythonPath = "C:\Python312\python.exe"
+$WorkingDirectory = "c:\Users\Ajay.AJAY\OneDrive\Desktop\test"
 
 # Check if script exists
 if (-not (Test-Path $ScriptPath)) {
@@ -11,7 +13,7 @@ if (-not (Test-Path $ScriptPath)) {
 }
 
 # Define the action (run python on our script)
-$Action = New-ScheduledTaskAction -Execute "python.exe" -Argument "`"$ScriptPath`""
+$Action = New-ScheduledTaskAction -Execute $PythonPath -Argument "`"$ScriptPath`"" -WorkingDirectory $WorkingDirectory
 
 # Define the trigger (runs everyday at 9:00 AM)
 $Trigger = New-ScheduledTaskTrigger -Daily -At "9:00AM"
