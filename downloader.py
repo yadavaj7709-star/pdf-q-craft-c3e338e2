@@ -39,6 +39,8 @@ SCREENSHOT_DIR = os.environ.get("SCREENSHOT_DIR_ENV", "C:/Users/Ajay.AJAY/.gemin
 os.makedirs(DOWNLOAD_DIR, exist_ok=True)
 if not os.path.exists(os.path.dirname(STATE_PATH)) and os.path.dirname(STATE_PATH):
     os.makedirs(os.path.dirname(STATE_PATH), exist_ok=True)
+if SCREENSHOT_DIR and not os.path.exists(SCREENSHOT_DIR):
+    os.makedirs(SCREENSHOT_DIR, exist_ok=True)
 
 if not USERNAME or not PASSWORD:
     print("Error: PORTAL_USERNAME or PORTAL_PASSWORD environment variables not set.")
@@ -49,12 +51,12 @@ def select_vuetify_option(page, label_text, option_text):
     print(f"Selecting '{option_text}' for '{label_text}'...")
     try:
         select_locator = page.locator(f"div.v-select:has-text('{label_text}'), div.v-input:has-text('{label_text}')").first
-        select_locator.click()
-        page.wait_for_timeout(1500)
+        select_locator.click(timeout=5000)
+        page.wait_for_timeout(1000)
         
         option_locator = page.locator(f"//div[contains(@class, 'v-list-item-title') and normalize-space()='{option_text}'] | //div[contains(@class, 'v-list-item') and normalize-space()='{option_text}'] | //*[role='option' and (normalize-space()='{option_text}' or contains(., '{option_text}'))]").first
-        option_locator.click()
-        page.wait_for_timeout(1500)
+        option_locator.click(timeout=5000)
+        page.wait_for_timeout(1000)
         return True
     except Exception as e:
         print(f"Failed to select '{option_text}': {e}")
@@ -135,6 +137,8 @@ def run_downloader():
             )
         except Exception as e:
             print(f"Warning: Timeout waiting for page content to hydrate: {e}")
+            if os.path.exists(SCREENSHOT_DIR):
+                page.screenshot(path=os.path.join(SCREENSHOT_DIR, "hydration_failed.png"))
             
         # Check if login button is present
         login_btn = page.locator("button:has-text('SIGN IN')")

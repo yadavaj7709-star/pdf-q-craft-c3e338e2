@@ -44,13 +44,14 @@ jobs:
         SCREENSHOT_DIR_ENV: 'screenshots'
       run: |
         mkdir -p screenshots
-        python downloader.py
+        python -u downloader.py
 
-    - name: Commit and Push PDFs
+    - name: Commit and Push Results
       run: |
         git config --local user.email "action@github.com"
         git config --local user.name "GitHub Action"
         git add downloads/ || true
+        git add screenshots/ || true
         git add state.json || true
-        git commit -m "Auto-downloaded latest marksheets" || exit 0
+        git commit -m "Auto-downloaded latest marksheets and logs" || exit 0
         git push
