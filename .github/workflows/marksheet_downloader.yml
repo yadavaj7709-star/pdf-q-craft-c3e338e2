@@ -44,7 +44,7 @@ jobs:
         SCREENSHOT_DIR_ENV: 'screenshots'
       run: |
         mkdir -p screenshots
-        python -u downloader.py
+        xvfb-run --server-args="-screen 0 1280x1024x24" python -u downloader.py
 
     - name: Commit and Push Results
       run: |

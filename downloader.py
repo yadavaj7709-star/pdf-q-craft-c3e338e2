@@ -256,8 +256,8 @@ def run_downloader():
     # 1. Attempt to extract fresh cookies from the user's active Chrome profile (only locally)
     try_extract_local_chrome_cookies()
 
-    # Determine headless mode based on environment
-    is_headless = "GITHUB_ACTIONS" in os.environ
+    # Determine headless mode based on environment (always False to ensure headed compliance for reCAPTCHA)
+    is_headless = False
     print(f"Launching Playwright (headless={is_headless})...")
     
     with sync_playwright() as p:
