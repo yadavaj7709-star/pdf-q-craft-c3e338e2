@@ -2,6 +2,7 @@ import os
 import sys
 import time
 from playwright.sync_api import sync_playwright
+from playwright_stealth import stealth_sync
 
 # Cross-platform paths configuration
 WORKSPACE = os.path.dirname(os.path.abspath(__file__))
@@ -102,14 +103,10 @@ def run_downloader():
                 timezone_id="Asia/Kolkata"
             )
             
-        # Inject advanced stealth settings to ensure we pass reCAPTCHA v3
-        context.add_init_script("""
-            Object.defineProperty(navigator, 'webdriver', { get: () => undefined });
-            window.chrome = { runtime: {} };
-            Object.defineProperty(navigator, 'languages', { get: () => ['en-US', 'en'] });
-        """)
-        
         page = context.new_page()
+        
+        # Apply full, industry-standard stealth settings to bypass all bot-detectors/captchas
+        stealth_sync(page)
         
         url = "https://learner.vierp.in/grade-card"
         print(f"Navigating to {url}...")
@@ -137,7 +134,7 @@ def run_downloader():
             )
         except Exception as e:
             print(f"Warning: Timeout waiting for page content to hydrate: {e}")
-            if os.path.exists(SCREENSHOT_DIR):
+            if SCREENSHOT_DIR:
                 page.screenshot(path=os.path.join(SCREENSHOT_DIR, "hydration_failed.png"))
             
         # Check if login button is present
@@ -174,7 +171,7 @@ def run_downloader():
                         pass
                 else:
                     print("Auto-login failed (possibly due to Captcha). Exiting to try next day.")
-                    if os.path.exists(SCREENSHOT_DIR):
+                    if SCREENSHOT_DIR:
                         page.screenshot(path=os.path.join(SCREENSHOT_DIR, "auto_login_failed.png"))
                     browser.close()
                     return False
@@ -240,7 +237,7 @@ def run_downloader():
                         print("Failed to save PDF:", pdf_error)
                 else:
                     print(f"Skipped: Printable marksheet content not found for {ay_name} Semester {sem_number}.")
-                    if os.path.exists(SCREENSHOT_DIR):
+                    if SCREENSHOT_DIR:
                         page.screenshot(path=os.path.join(SCREENSHOT_DIR, f"debug_sem_{sem_number}_failed.png"))
                     
         browser.close()

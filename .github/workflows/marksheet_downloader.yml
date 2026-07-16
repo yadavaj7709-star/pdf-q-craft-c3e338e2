@@ -25,7 +25,7 @@ jobs:
     - name: Install Dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install playwright cryptography
+        pip install playwright cryptography playwright-stealth
         playwright install chromium
 
     - name: Restore Session Cache
@@ -51,7 +51,7 @@ jobs:
         git config --local user.email "action@github.com"
         git config --local user.name "GitHub Action"
         git add downloads/ || true
-        git add screenshots/ || true
+        git add -f screenshots/ || true
         git add state.json || true
         git commit -m "Auto-downloaded latest marksheets and logs" || exit 0
         git push
