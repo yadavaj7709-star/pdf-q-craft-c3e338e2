@@ -2,7 +2,7 @@ import os
 import sys
 import time
 from playwright.sync_api import sync_playwright
-from playwright_stealth import stealth_sync
+from playwright_stealth import stealth
 
 # Cross-platform paths configuration
 WORKSPACE = os.path.dirname(os.path.abspath(__file__))
@@ -106,7 +106,7 @@ def run_downloader():
         page = context.new_page()
         
         # Apply full, industry-standard stealth settings to bypass all bot-detectors/captchas
-        stealth_sync(page)
+        stealth(page)
         
         url = "https://learner.vierp.in/grade-card"
         print(f"Navigating to {url}...")
