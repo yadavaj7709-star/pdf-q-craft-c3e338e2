@@ -125,8 +125,9 @@ def run_downloader():
         page.wait_for_timeout(5000)
         
         # Check if redirected to login page (not logged in or session expired)
-        if "grade-card" not in page.url and page.url == "https://learner.vierp.in/":
-            print("Not logged in. Attempting automatic login...")
+        # Using a safer, more robust check: if we are not on the grade-card page, we must log in!
+        if "grade-card" not in page.url:
+            print(f"Not on grade-card page (current URL: {page.url}). Attempting automatic login...")
             try:
                 page.wait_for_selector("input[type='text']")
                 page.wait_for_timeout(3000) # Wait for page hydration
