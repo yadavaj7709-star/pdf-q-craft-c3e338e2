@@ -64,12 +64,15 @@ def select_vuetify_option(page, label_text, option_text):
         return False
 
 def run_downloader():
-    print("Launching Playwright (headless)...")
+    # Determine headless mode based on environment (headed locally for reCAPTCHA bypass)
+    is_headless = "GITHUB_ACTIONS" in os.environ
+    print(f"Launching Playwright (headless={is_headless})...")
+    
     with sync_playwright() as p:
         try:
             # Try to use Chrome channel if running locally on Windows
             browser = p.chromium.launch(
-                headless=True,
+                headless=is_headless,
                 channel="chrome" if os.name == 'nt' else None,
                 args=[
                     "--disable-blink-features=AutomationControlled",
@@ -79,7 +82,7 @@ def run_downloader():
         except Exception as e:
             print(f"Could not launch Chrome channel: {e}. Launching default Chromium...")
             browser = p.chromium.launch(
-                headless=True,
+                headless=is_headless,
                 args=[
                     "--disable-blink-features=AutomationControlled",
                     "--disable-infobars"
