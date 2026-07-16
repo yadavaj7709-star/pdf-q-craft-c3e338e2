@@ -307,15 +307,16 @@ def run_downloader():
                     page.type("input[type='password']", PASSWORD, delay=150)
                     page.wait_for_timeout(1500)
                     
-                    # Hydration click loop (retry clicking until dashboard is reached)
+                    # Click SIGN IN once and wait up to 15 seconds for dashboard redirection
+                    print("Clicking SIGN IN...")
+                    page.click("button:has-text('SIGN IN')")
+                    
                     logged_in = False
-                    for click_attempt in range(8):
+                    for wait_sec in range(15):
+                        page.wait_for_timeout(1000)
                         if "Dashboard" in page.url or page.locator("button:has-text('SIGN IN')").count() == 0:
                             logged_in = True
                             break
-                        print(f"Login click attempt {click_attempt+1}...")
-                        page.click("button:has-text('SIGN IN')")
-                        page.wait_for_timeout(5000)
                         
                     if logged_in:
                         print(f"Login successful! Saving session state to {STATE_PATH}...")
