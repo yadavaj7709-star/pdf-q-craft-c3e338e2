@@ -22,8 +22,12 @@ if os.path.exists(env_path):
 if "STATE_PATH_ENV" in os.environ:
     STATE_PATH = os.environ["STATE_PATH_ENV"]
 else:
-    # Local Windows fallback
-    STATE_PATH = "C:/Users/Ajay.AJAY/.gemini/antigravity/scratch/state.json"
+    # Fallback to local workspace file, then local Windows AppData scratch path
+    local_workspace_state = os.path.join(WORKSPACE, "state.json")
+    if os.path.exists(local_workspace_state):
+        STATE_PATH = local_workspace_state
+    else:
+        STATE_PATH = "C:/Users/Ajay.AJAY/.gemini/antigravity/scratch/state.json"
 
 # Credentials from environment variables
 USERNAME = os.environ.get("PORTAL_USERNAME")
