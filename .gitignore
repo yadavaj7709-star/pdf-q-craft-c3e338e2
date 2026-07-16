@@ -22,3 +22,22 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Local environment secrets
+.env
+
+# Local session state
+state.json
+
+# Local Chrome Profile Data
+chrome_profile/
+
+# Python cache files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Screenshots
+screenshots/
+*.png
