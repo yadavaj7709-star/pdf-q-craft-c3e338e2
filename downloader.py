@@ -40,6 +40,23 @@ PASSWORD = os.environ.get("PORTAL_PASSWORD")
 SCREENSHOT_DIR = os.environ.get("SCREENSHOT_DIR_ENV", "C:/Users/Ajay.AJAY/.gemini/antigravity/brain/fb5a0422-59c7-457a-b6b1-c080ef5a060d")
 
 os.makedirs(DOWNLOAD_DIR, exist_ok=True)
+
+def git_push_state():
+    if "GITHUB_ACTIONS" not in os.environ:
+        print("Syncing updated session state to GitHub...")
+        try:
+            status = os.popen("git status --porcelain state.json").read().strip()
+            # If status is empty, check if state.json is untracked
+            untracked = os.popen("git status --porcelain --ignored state.json").read().strip()
+            if status or untracked or "state.json" in untracked:
+                os.system("git add state.json")
+                os.system('git commit -m "Auto-update session cookies [skip ci]"')
+                os.system("git push")
+                print("Session state successfully pushed to GitHub!")
+            else:
+                print("Session state has not changed. Skipping git push.")
+        except Exception as e:
+            print(f"Warning: Failed to push session state to GitHub: {e}")
 if SCREENSHOT_DIR and not os.path.exists(SCREENSHOT_DIR):
     os.makedirs(SCREENSHOT_DIR, exist_ok=True)
 
@@ -156,6 +173,7 @@ def try_extract_local_chrome_cookies():
             with open(STATE_PATH, "w", encoding="utf-8") as f:
                 json.dump(state_data, f, indent=2)
             print(f"Successfully extracted {len(playwright_cookies)} fresh cookies from Google Chrome.")
+            git_push_state()
             return True
     except Exception as err:
         print(f"Warning: Failed to extract Chrome cookies: {err}")
@@ -386,6 +404,7 @@ def run_downloader():
                     if logged_in:
                         print(f"Login successful! Saving session state to {STATE_PATH}...")
                         context.storage_state(path=STATE_PATH)
+                        git_push_state()
                         page.goto("https://learner.vierp.in/grade-card")
                         try:
                             page.wait_for_selector("div.v-select:has-text('Academic Year'), div.v-input:has-text('Academic Year')", timeout=15000)
