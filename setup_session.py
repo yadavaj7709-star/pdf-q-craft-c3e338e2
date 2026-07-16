@@ -70,10 +70,31 @@ def setup():
         print("Solve any Captcha challenges if they appear.")
         print("=======================\n")
         
+        # Load credentials from environment
+        username = os.environ.get("PORTAL_USERNAME")
+        password = os.environ.get("PORTAL_PASSWORD")
+        
+        # Load .env fallback if not loaded
+        if not username or not password:
+            env_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), ".env")
+            if os.path.exists(env_path):
+                with open(env_path, "r", encoding="utf-8") as f:
+                    for line in f:
+                        line = line.strip()
+                        if line and "=" in line:
+                            k, v = line.split("=", 1)
+                            if k.strip() == "PORTAL_USERNAME":
+                                username = v.strip()
+                            elif k.strip() == "PORTAL_PASSWORD":
+                                password = v.strip()
+
         # Fill credentials
-        page.fill("input[type='text']", "ajay.21810409@viit.ac.in")
-        page.fill("input[type='password']", "Deadman@9527")
-        print("Filled credentials.")
+        if username and password:
+            page.fill("input[type='text']", username)
+            page.fill("input[type='password']", password)
+            print("Filled credentials from .env.")
+        else:
+            print("Warning: Portal credentials not found in environment or .env file.")
         page.wait_for_timeout(1000)
         
         # Click SIGN IN
