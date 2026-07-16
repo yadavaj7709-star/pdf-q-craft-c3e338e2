@@ -2,7 +2,7 @@ import os
 import sys
 from playwright.sync_api import sync_playwright
 
-PROFILE_DIR = "C:/Users/Ajay.AJAY/.gemini/antigravity/scratch/chrome_profile"
+WORKSPACE = os.path.dirname(os.path.abspath(__file__))
 SCREENSHOT_DIR = "C:/Users/Ajay.AJAY/.gemini/antigravity/brain/fb5a0422-59c7-457a-b6b1-c080ef5a060d"
 
 def setup():
@@ -65,18 +65,18 @@ def setup():
         page.wait_for_selector("input[type='text']")
         
         print("\n=== ACTION REQUIRED ===")
-        print("A Google Chrome window should have opened on your screen.")
+        print("A Google Chrome window has opened on your screen.")
         print("Please enter your credentials and log in manually in that window.")
         print("Solve any Captcha challenges if they appear.")
         print("=======================\n")
         
-        # Load credentials from environment
+        # Load credentials from env
         username = os.environ.get("PORTAL_USERNAME")
         password = os.environ.get("PORTAL_PASSWORD")
         
         # Load .env fallback if not loaded
         if not username or not password:
-            env_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), ".env")
+            env_path = os.path.join(WORKSPACE, ".env")
             if os.path.exists(env_path):
                 with open(env_path, "r", encoding="utf-8") as f:
                     for line in f:
@@ -87,7 +87,7 @@ def setup():
                                 username = v.strip()
                             elif k.strip() == "PORTAL_PASSWORD":
                                 password = v.strip()
-
+ 
         # Fill credentials
         if username and password:
             page.fill("input[type='text']", username)
@@ -113,17 +113,29 @@ def setup():
                 
             if i % 15 == 0 and i > 0:
                 print(f"Waiting... ({i}s elapsed). Current URL: {page.url}")
-                # Save screenshot of current state
-                page.screenshot(path=os.path.join(SCREENSHOT_DIR, f"setup_waiting_{i}.png"))
+                if SCREENSHOT_DIR:
+                    page.screenshot(path=os.path.join(SCREENSHOT_DIR, f"setup_waiting_{i}.png"))
                 
         if logged_in:
-            state_path = "C:/Users/Ajay.AJAY/.gemini/antigravity/scratch/state.json"
+            state_path = os.path.join(WORKSPACE, "state.json")
             context.storage_state(path=state_path)
             print(f"Session state saved to {state_path}")
-            page.screenshot(path=os.path.join(SCREENSHOT_DIR, "setup_success.png"))
+            if SCREENSHOT_DIR:
+                page.screenshot(path=os.path.join(SCREENSHOT_DIR, "setup_success.png"))
+                
+            # Sync with GitHub
+            print("Syncing updated session state to GitHub...")
+            try:
+                os.system("git add state.json")
+                os.system('git commit -m "Auto-update session cookies [skip ci]"')
+                os.system("git push")
+                print("SUCCESS: Session cookies pushed to GitHub!")
+            except Exception as git_err:
+                print("Warning: Failed to git push:", git_err)
         else:
             print("Failed to log in within 5 minutes.")
-            page.screenshot(path=os.path.join(SCREENSHOT_DIR, "setup_failed_final.png"))
+            if SCREENSHOT_DIR:
+                page.screenshot(path=os.path.join(SCREENSHOT_DIR, "setup_failed_final.png"))
             
         browser.close()
 
