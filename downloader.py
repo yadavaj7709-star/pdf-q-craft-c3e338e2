@@ -122,15 +122,23 @@ def run_downloader():
                     browser.close()
                     return False
                     
-        page.wait_for_timeout(5000)
-        
-        # Check if redirected to login page (we check for the presence of the SIGN IN button on the page)
+        # Wait for either the SIGN IN button (login screen) or the Academic Year dropdown (grade card screen) to appear
+        print("Waiting for page hydration...")
+        try:
+            page.wait_for_selector(
+                "button:has-text('SIGN IN'), div.v-select:has-text('Academic Year'), div.v-input:has-text('Academic Year')", 
+                timeout=20000
+            )
+        except Exception as e:
+            print(f"Warning: Timeout waiting for page content to hydrate: {e}")
+            
+        # Check if login button is present
         login_btn = page.locator("button:has-text('SIGN IN')")
         if login_btn.count() > 0:
             print("Login screen detected. Attempting automatic login...")
             try:
                 page.wait_for_selector("input[type='text']")
-                page.wait_for_timeout(3000) # Wait for page hydration
+                page.wait_for_timeout(3000) # Additional wait for inputs hydration
                 
                 # Fill credentials
                 page.fill("input[type='text']", USERNAME)
@@ -151,7 +159,11 @@ def run_downloader():
                     print(f"Login successful! Saving session state to {STATE_PATH}...")
                     context.storage_state(path=STATE_PATH)
                     page.goto("https://learner.vierp.in/grade-card")
-                    page.wait_for_timeout(5000)
+                    # Wait for grade card page to hydrate after redirect
+                    try:
+                        page.wait_for_selector("div.v-select:has-text('Academic Year'), div.v-input:has-text('Academic Year')", timeout=15000)
+                    except Exception:
+                        pass
                 else:
                     print("Auto-login failed (possibly due to Captcha). Exiting to try next day.")
                     if os.path.exists(SCREENSHOT_DIR):
