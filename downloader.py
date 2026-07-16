@@ -124,10 +124,10 @@ def run_downloader():
                     
         page.wait_for_timeout(5000)
         
-        # Check if redirected to login page (not logged in or session expired)
-        # Using a safer, more robust check: if we are not on the grade-card page, we must log in!
-        if "grade-card" not in page.url:
-            print(f"Not on grade-card page (current URL: {page.url}). Attempting automatic login...")
+        # Check if redirected to login page (we check for the presence of the SIGN IN button on the page)
+        login_btn = page.locator("button:has-text('SIGN IN')")
+        if login_btn.count() > 0:
+            print("Login screen detected. Attempting automatic login...")
             try:
                 page.wait_for_selector("input[type='text']")
                 page.wait_for_timeout(3000) # Wait for page hydration
@@ -140,7 +140,7 @@ def run_downloader():
                 # Hydration click loop (retry clicking until dashboard is reached)
                 logged_in = False
                 for click_attempt in range(8):
-                    if "Dashboard" in page.url:
+                    if "Dashboard" in page.url or page.locator("button:has-text('SIGN IN')").count() == 0:
                         logged_in = True
                         break
                     print(f"Login click attempt {click_attempt+1}...")
@@ -162,6 +162,8 @@ def run_downloader():
                 print(f"Error during auto-login process: {login_err}")
                 browser.close()
                 return False
+        else:
+            print("Authenticated session active (no login screen detected).")
                 
         print("Successfully loaded Grade Card page.")
         
