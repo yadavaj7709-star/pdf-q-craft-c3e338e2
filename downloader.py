@@ -1,6 +1,13 @@
 import os
 import sys
 import time
+import json
+import base64
+import sqlite3
+import shutil
+import ctypes
+from ctypes import wintypes
+from cryptography.hazmat.primitives.ciphers.aead import AESGCM
 from playwright.sync_api import sync_playwright
 
 # Cross-platform paths configuration
@@ -22,12 +29,7 @@ if os.path.exists(env_path):
 if "STATE_PATH_ENV" in os.environ:
     STATE_PATH = os.environ["STATE_PATH_ENV"]
 else:
-    # Fallback to local workspace file, then local Windows AppData scratch path
-    local_workspace_state = os.path.join(WORKSPACE, "state.json")
-    if os.path.exists(local_workspace_state):
-        STATE_PATH = local_workspace_state
-    else:
-        STATE_PATH = "C:/Users/Ajay.AJAY/.gemini/antigravity/scratch/state.json"
+    STATE_PATH = os.path.join(WORKSPACE, "state.json")
 
 # Credentials from environment variables
 USERNAME = os.environ.get("PORTAL_USERNAME")
@@ -37,15 +39,133 @@ PASSWORD = os.environ.get("PORTAL_PASSWORD")
 SCREENSHOT_DIR = os.environ.get("SCREENSHOT_DIR_ENV", "C:/Users/Ajay.AJAY/.gemini/antigravity/brain/fb5a0422-59c7-457a-b6b1-c080ef5a060d")
 
 os.makedirs(DOWNLOAD_DIR, exist_ok=True)
-if not os.path.exists(os.path.dirname(STATE_PATH)) and os.path.dirname(STATE_PATH):
-    os.makedirs(os.path.dirname(STATE_PATH), exist_ok=True)
 if SCREENSHOT_DIR and not os.path.exists(SCREENSHOT_DIR):
     os.makedirs(SCREENSHOT_DIR, exist_ok=True)
 
-if not USERNAME or not PASSWORD:
-    print("Error: PORTAL_USERNAME or PORTAL_PASSWORD environment variables not set.")
-    print("Please set them in your system environment or create a local .env file.")
-    sys.exit(1)
+# Windows DPAPI decrypt helper (only for local Windows decryption)
+class DATA_BLOB(ctypes.Structure):
+    _fields_ = [('cbData', wintypes.DWORD), ('pbData', ctypes.POINTER(ctypes.c_char))]
+
+def dpapi_decrypt(encrypted_bytes):
+    crypt32 = ctypes.windll.crypt32
+    LocalFree = ctypes.windll.kernel32.LocalFree
+    
+    in_blob = DATA_BLOB(len(encrypted_bytes), ctypes.create_string_buffer(encrypted_bytes))
+    out_blob = DATA_BLOB()
+    
+    if crypt32.CryptUnprotectData(ctypes.byref(in_blob), None, None, None, None, 0, ctypes.byref(out_blob)):
+        decrypted_bytes = ctypes.string_at(out_blob.pbData, out_blob.cbData)
+        LocalFree(out_blob.pbData)
+        return decrypted_bytes
+    else:
+        raise Exception("DPAPI Decryption failed")
+
+def get_chrome_key(user_data_path):
+    local_state_path = os.path.join(user_data_path, "Local State")
+    if not os.path.exists(local_state_path):
+        raise FileNotFoundError(f"Local State file not found at {local_state_path}")
+        
+    with open(local_state_path, "r", encoding="utf-8") as f:
+        local_state = json.load(f)
+        
+    encrypted_key = base64.b64decode(local_state["os_crypt"]["encrypted_key"])
+    dpapi_key = encrypted_key[5:]
+    master_key = dpapi_decrypt(dpapi_key)
+    return master_key
+
+def decrypt_cookie_value(encrypted_value, master_key):
+    try:
+        prefix = encrypted_value[:3]
+        if prefix in (b'v10', b'v11'):
+            nonce = encrypted_value[3:15]
+            ciphertext = encrypted_value[15:]
+            aesgcm = AESGCM(master_key)
+            decrypted = aesgcm.decrypt(nonce, ciphertext, None)
+            return decrypted.decode('utf-8')
+        else:
+            return dpapi_decrypt(encrypted_value).decode('utf-8')
+    except Exception:
+        return None
+
+def try_extract_local_chrome_cookies():
+    """
+    Attempts to read and decrypt active session cookies from the local Chrome installation.
+    Fails gracefully if Chrome is running (database locked) or if run in non-Windows environment.
+    """
+    if os.name != 'nt':
+        return False
+        
+    user_data_path = "C:/Users/Ajay.AJAY/AppData/Local/Google/Chrome/User Data"
+    cookies_db_path = os.path.join(user_data_path, "Default", "Network", "Cookies")
+    
+    if not os.path.exists(cookies_db_path):
+        return False
+        
+    temp_db_path = os.path.join(WORKSPACE, "temp_cookies.db")
+    
+    try:
+        # Attempt copy (will raise PermissionError if Chrome has exclusive lock)
+        shutil.copy2(cookies_db_path, temp_db_path)
+    except Exception as e:
+        print(f"Notice: Google Chrome is currently open/locked ({e}). Using cached session.")
+        return False
+        
+    try:
+        master_key = get_chrome_key(user_data_path)
+        conn = sqlite3.connect(temp_db_path)
+        cursor = conn.cursor()
+        
+        query = """
+        SELECT host_key, name, path, encrypted_value, expires_utc, is_secure, is_httponly 
+        FROM cookies 
+        WHERE host_key LIKE '%vierp.in%'
+        """
+        cursor.execute(query)
+        rows = cursor.fetchall()
+        
+        playwright_cookies = []
+        for row in rows:
+            host_key, name, path, encrypted_value, expires_utc, is_secure, is_httponly = row
+            decrypted_val = decrypt_cookie_value(encrypted_value, master_key)
+            
+            if decrypted_val:
+                expires_seconds = (expires_utc / 1000000) - 11644473600 if expires_utc > 0 else -1
+                cookie_dict = {
+                    "name": name,
+                    "value": decrypted_val,
+                    "domain": host_key,
+                    "path": path,
+                    "httpOnly": bool(is_httponly),
+                    "secure": bool(is_secure),
+                    "sameSite": "Lax"
+                }
+                if expires_seconds > 0:
+                    cookie_dict["expires"] = expires_seconds
+                playwright_cookies.append(cookie_dict)
+                
+        conn.close()
+        
+        # Clean up temp db file
+        if os.path.exists(temp_db_path):
+            os.remove(temp_db_path)
+            
+        if playwright_cookies:
+            state_data = {
+                "cookies": playwright_cookies,
+                "origins": []
+            }
+            with open(STATE_PATH, "w", encoding="utf-8") as f:
+                json.dump(state_data, f, indent=2)
+            print(f"Successfully extracted {len(playwright_cookies)} fresh cookies from Google Chrome.")
+            return True
+    except Exception as err:
+        print(f"Warning: Failed to extract Chrome cookies: {err}")
+        if os.path.exists(temp_db_path):
+            try:
+                os.remove(temp_db_path)
+            except Exception:
+                pass
+    return False
 
 def select_vuetify_option(page, label_text, option_text):
     print(f"Selecting '{option_text}' for '{label_text}'...")
@@ -63,6 +183,9 @@ def select_vuetify_option(page, label_text, option_text):
         return False
 
 def run_downloader():
+    # 1. Attempt to extract fresh cookies from the user's active Chrome profile
+    try_extract_local_chrome_cookies()
+
     # Determine headless mode based on environment
     is_headless = "GITHUB_ACTIONS" in os.environ
     print(f"Launching Playwright (headless={is_headless})...")
@@ -166,49 +289,54 @@ def run_downloader():
         # Check if login button is present
         login_btn = page.locator("button:has-text('SIGN IN')")
         if login_btn.count() > 0:
-            print("Login screen detected. Attempting automatic login...")
-            try:
-                page.wait_for_selector("input[type='text']")
-                page.wait_for_timeout(3000) # Additional wait for inputs hydration
-                
-                # Fill credentials with human-like typing delays to bypass reCAPTCHA v3
-                print("Typing username...")
-                page.locator("input[type='text']").click()
-                page.type("input[type='text']", USERNAME, delay=120)
-                page.wait_for_timeout(1000)
-                
-                print("Typing password...")
-                page.locator("input[type='password']").click()
-                page.type("input[type='password']", PASSWORD, delay=150)
-                page.wait_for_timeout(1500)
-                
-                # Hydration click loop (retry clicking until dashboard is reached)
-                logged_in = False
-                for click_attempt in range(8):
-                    if "Dashboard" in page.url or page.locator("button:has-text('SIGN IN')").count() == 0:
-                        logged_in = True
-                        break
-                    print(f"Login click attempt {click_attempt+1}...")
-                    page.click("button:has-text('SIGN IN')")
-                    page.wait_for_timeout(5000)
+            print("Login screen detected. Session is unauthenticated.")
+            if USERNAME and PASSWORD:
+                print("Attempting automatic login...")
+                try:
+                    page.wait_for_selector("input[type='text']")
+                    page.wait_for_timeout(3000)
                     
-                if logged_in:
-                    print(f"Login successful! Saving session state to {STATE_PATH}...")
-                    context.storage_state(path=STATE_PATH)
-                    page.goto("https://learner.vierp.in/grade-card")
-                    # Wait for grade card page to hydrate after redirect
-                    try:
-                        page.wait_for_selector("div.v-select:has-text('Academic Year'), div.v-input:has-text('Academic Year')", timeout=15000)
-                    except Exception:
-                        pass
-                else:
-                    print("Auto-login failed (possibly due to Captcha). Exiting to try next day.")
-                    if SCREENSHOT_DIR:
-                        page.screenshot(path=os.path.join(SCREENSHOT_DIR, "auto_login_failed.png"))
+                    # Fill credentials with human-like typing delays to bypass reCAPTCHA v3
+                    print("Typing username...")
+                    page.locator("input[type='text']").click()
+                    page.type("input[type='text']", USERNAME, delay=120)
+                    page.wait_for_timeout(1000)
+                    
+                    print("Typing password...")
+                    page.locator("input[type='password']").click()
+                    page.type("input[type='password']", PASSWORD, delay=150)
+                    page.wait_for_timeout(1500)
+                    
+                    # Hydration click loop (retry clicking until dashboard is reached)
+                    logged_in = False
+                    for click_attempt in range(8):
+                        if "Dashboard" in page.url or page.locator("button:has-text('SIGN IN')").count() == 0:
+                            logged_in = True
+                            break
+                        print(f"Login click attempt {click_attempt+1}...")
+                        page.click("button:has-text('SIGN IN')")
+                        page.wait_for_timeout(5000)
+                        
+                    if logged_in:
+                        print(f"Login successful! Saving session state to {STATE_PATH}...")
+                        context.storage_state(path=STATE_PATH)
+                        page.goto("https://learner.vierp.in/grade-card")
+                        try:
+                            page.wait_for_selector("div.v-select:has-text('Academic Year'), div.v-input:has-text('Academic Year')", timeout=15000)
+                        except Exception:
+                            pass
+                    else:
+                        print("Auto-login failed (possibly due to Captcha). Exiting to try next day.")
+                        if SCREENSHOT_DIR:
+                            page.screenshot(path=os.path.join(SCREENSHOT_DIR, "auto_login_failed.png"))
+                        browser.close()
+                        return False
+                except Exception as login_err:
+                    print(f"Error during auto-login process: {login_err}")
                     browser.close()
                     return False
-            except Exception as login_err:
-                print(f"Error during auto-login process: {login_err}")
+            else:
+                print("Error: No credentials available for auto-login fallback.")
                 browser.close()
                 return False
         else:
