@@ -149,10 +149,16 @@ def run_downloader():
                 page.wait_for_selector("input[type='text']")
                 page.wait_for_timeout(3000) # Additional wait for inputs hydration
                 
-                # Fill credentials
-                page.fill("input[type='text']", USERNAME)
-                page.fill("input[type='password']", PASSWORD)
+                # Fill credentials with human-like typing delays to bypass reCAPTCHA v3
+                print("Typing username...")
+                page.locator("input[type='text']").click()
+                page.type("input[type='text']", USERNAME, delay=120)
                 page.wait_for_timeout(1000)
+                
+                print("Typing password...")
+                page.locator("input[type='password']").click()
+                page.type("input[type='password']", PASSWORD, delay=150)
+                page.wait_for_timeout(1500)
                 
                 # Hydration click loop (retry clicking until dashboard is reached)
                 logged_in = False
